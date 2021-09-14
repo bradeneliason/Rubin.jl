@@ -200,8 +200,8 @@ end
 ## Note: They claim 72944 tests total in the website, 
 # but we must care about the ones that are commented
 #
-#                  💪 Currently at 72957 💪, 
-#                          with 8        missing
+#                  💪 Currently at 72961 💪, 
+#                          with 1??        missing
 #                            Wermer book missing
 ##################################################################
 
@@ -278,7 +278,13 @@ function Base.parse(file, ::Type{RubiTests})
 	headerregex = r"\(\*(.+)\*\)"
 	# This regex globs up the 4 entries in {a,format,like,this}
 	# TODO Fix those 5 missing cases in issue
-	inttestregex = r"{(.+),(.+),(.+),(.+)?}"
+	# inttestregex = r"{(.+),(.+),(.+),(.+)?}"
+	inttestregex = r"
+    {(.+),                  # captures integrand
+    \s?([a-z])\s?,          # captures variable (single letter)
+    \s?((?:-?[0-9\s]+)|(?:If\[\$VersionNumber[>=<]{1,3}[-,\s\d]*\])) # captures steps (number or VersionNumber check) 
+    (?:,(.+))?}             # capturens optimal result if it exists
+    "x
 	rubi = artifact"RubiTests"
 	path = relpath(file)
 
@@ -366,12 +372,12 @@ function load(::Type{RubiTests})
 		parse(string(path(file)), RubiTests)
 	end
 	vtests = reducevalues(vcat, parsedstructs)
-	72957 == length(vtests) || error("Please alert @miguelraz, something has 💥")
+	72961 == length(vtests) || error("Please alert @miguelraz, something has 💥")
 	vtests
 end
 
 vtests = load(RubiTests);
-@test length(vtests) == 72957
+@test length(vtests) == 72961
 
 # For JSON3 writing
 StructTypes.StructType(::Type{IntRuleTest}) = StructTypes.Struct();
@@ -396,7 +402,7 @@ end
 
 
 ##################################################################
-# Chapter 3:
+## Chapter 3:
 #        Woflram -> Julia
 #
 # GOALS: ⚽    
