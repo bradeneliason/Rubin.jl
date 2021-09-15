@@ -5,7 +5,9 @@ version = "0.1.0"
 
 [deps]
 ArtifactUtils = "8b73e784-e7d8-4ea5-973d-377fed4e3bce"
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 Conda = "8f4d0f93-b110-5947-807f-2305c1781a2d"
+Elliptic = "b305315f-e792-5b7a-8f41-49f472929428"
 FileTrees = "72696420-646e-6120-6e77-6f6420746567"
 JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
 Metatheory = "e9d8d322-4543-424a-9be4-0cc815abe26c"

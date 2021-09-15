@@ -68,25 +68,98 @@ function mathimatica2julia(str)
     return str
 end
 
-transform!(df, :integrand => ByRow(mathimatica2julia) => :juliaintegrand);
-transform!(df, :optimal => ByRow(mathimatica2julia) => :juliaoptimal);
+##
+using SymPy
+using ProgressMeter
+using DelimitedFiles
+const sympy_parsing_mathematica = SymPy.PyCall.pyimport("sympy.parsing.mathematica")
+# m2j(s::AbstractString, substitutions::Pair{<:AbstractString,<:AbstractString}...) =
+    # SymPy.lambdify_expr(sympy_parsing_mathematica["mathematica"](s, Dict(substitutions...))).args[2]
+m2j(s::AbstractString, substitutions::Pair{<:AbstractString,<:AbstractString}...) =
+    SymPy.walk_expression(sympy_parsing_mathematica."mathematica"(s, Dict(substitutions...)))
+
+##
+
+m2j_subs = readdlm("test/funcsubs_custom.csv", ',', String)
+mathematica = map(s -> s * "[x]", m2j_subs[:,1])
+julia = map(s -> s * "(x)", m2j_subs[:,2])
+m2j_subs = Pair.(mathematica, julia)
+# foo = rand(df[!, :integrand])
+# m2j(foo, m2j_subs...)
+
+transform!(df, :integrand => ByRow(x -> !occursin("VersionNumber", x)) => :jiparses)
+transform!(df, :optimal => ByRow(x -> !occursin("VersionNumber", x)) => :joparses)
+transform!(df, :integrand => :juliaintegrand) # Pass through original
+transform!(df, :optimal => :juliaoptimal)  # Pass through original
+##
+function try_parse(input)
+    output = input
+    try
+        output = m2j(input, m2j_subs...)
+        return true, string(output)
+    catch
+        output *= " # Parse failed"
+        return false, output
+    end
+end
+
+# AsTable([:a, :c]) => ByRow(x ->(2x.a,2x.c)) =>[:a,:c]
+transform!(df, :optimal => ByRow(try_parse) => [:joparses, :juliaoptimal])
+transform!(df, :integrand => ByRow(try_parse) => [:jiparses, :juliaintegrand])
+
+##
+@showprogress for r in eachrow(first(df,50))
+    # println(r.jiparses," ", r.joparses)
+    if !(r.jiparses && r.joparses)
+        r.juliaintegrand *= " # Parse failed"
+        r.juliaoptimal *= " # Parse failed"
+        continue
+    end
+
+    r.jiparses, r.juliaintegrand = try_parse(r.integrand)
+    r.joparses, r.juliaoptimal = try_parse(r.optimal)
+
+    println( r.juliaintegrand)
+    # try
+    #     r.juliaintegrand = m2j(r.integrand, m2j_subs...)
+    # catch
+    #     r.juliaintegrand *= " # Parse failed"
+    #     r.jiparses = false
+    # end
+
+    # try
+    #     r.juliaoptimal = m2j(r.optimal, m2j_subs...)
+    # catch
+    #     r.juliaoptimal *= " # Parse failed"
+    #     r.joparses = false
+    # end
+end
+first(df,1000).juliaintegrand
+first(df,1000).juliaoptimal
+
+##
+
+# transform!(df, :integrand => ByRow(mathimatica2julia) => :juliaintegrand);
+# transform!(df, :optimal => ByRow(mathimatica2julia) => :juliaoptimal);
+# transform!(df, :integrand => ByRow(x -> m2j(x, m2j_subs...)) => :juliaintegrand);
+# transform!(df, :optimal => ByRow(m2j) => :juliaoptimal);
 # df[!, :juliaintegrand]
 # df[!, :juliaoptimal]
 
 # Parsing Tests 
-function parses(input)
-    occursin("VersionNumber", input) && return false
+# function parses(input)
+#     occursin("VersionNumber", input) && return false
 
-    try 
-        Meta.parse(input)
-    catch
-        return false
-    end
-    return true
-end
+#     try 
+#         Meta.parse(input)
+#     catch
+#         return false
+#     end
+#     return true
+# end
 
-transform!(df, :juliaintegrand => ByRow(parses) => :jiparses);
-transform!(df, :juliaoptimal => ByRow(parses) => :joparses);
+# transform!(df, :juliaintegrand => ByRow(parses) => :jiparses);
+# transform!(df, :juliaoptimal => ByRow(parses) => :joparses);
 
 using CSV
 CSV.write("test/conversion_data.csv", df)

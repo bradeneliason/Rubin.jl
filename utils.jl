@@ -19,6 +19,9 @@ using StructTypes
 using Logging
 using SymPy
 using PyCall
+using CSV
+using DelimitedFiles
+using DataFrames
 
 # TODO mark as constants
 rubi = artifact"Rubi"
@@ -189,7 +192,7 @@ function write(vstructs::Vector{IntRuleCapture}, ::Type{RubiRules})
 end
 
 ##################################################################
-# Chapter 2:
+## Chapter 2:
 #        The friggin' tests
 #
 # GOALS: ⚽
@@ -323,7 +326,7 @@ function Base.parse(file, ::Type{RubiTests})
 			#@info "pushed to test"
 			push!(tests, IntRuleTest(integrand = integrand, variable = variable,
 									 path = path, filename =  filename,
-									 steps = steps, optimal = optimal,
+									 steps = steps, optimal = string(optimal),
 									 iscomment = iscomment))
 		elseif startswith("(*", line) && endswith("*)", line)
 		# 🆙 Update the header
@@ -508,260 +511,261 @@ sympydictfixes = PyDict(Dict("Int[*x]" => "integrate(*x)",
 							 ));
 
 funcdicts = Dict(
-"Abs[*x]" => "abs(*x)",
-"ActivateTrig[*x]" => "activatetrig(*x)",
-"AlgebraicFunctionQ[*x]" => "algebraicfunctionq(*x)",
-"Apart[*x]" => "apart(*x)",
-"AppellF1[*x]" => "appellf1(*x)",
-"ArcCos[*x]" => "arccos(*x)",
-"ArcCosh[*x]" => "arccosh(*x)",
-"ArcCot[*x]" => "arccot(*x)",
-"ArcCoth[*x]" => "arccoth(*x)",
-"ArcCsc[*x]" => "arccsc(*x)",
-"ArcCsch[*x]" => "arccsch(*x)",
-"ArcSec[*x]" => "arcsec(*x)",
-"ArcSech[*x]" => "arcsech(*x)",
-"ArcSin[*x]" => "arcsin(*x)",
-"ArcSinh[*x]" => "arcsinh(*x)",
-"ArcTan[*x]" => "arctan(*x)",
-"ArcTanh[*x]" => "arctanh(*x)",
-"AtomQ[*x]" => "atomq(*x)",
-"BesselJ[*x]" => "besselj(*x)",
-"BinomialDegree[*x]" => "binomialdegree(*x)",
-"BinomialMatchQ[*x]" => "binomialmatchq(*x)",
-"BinomialParts[*x]" => "binomialparts(*x)",
-"BinomialQ[*x]" => "binomialq(*x)",
-"Block[*x]" => "block(*x)",
-"CalculusFreeQ[*x]" => "calculusfreeq(*x)",
-"Cancel[*x]" => "cancel(*x)",
-"CannotIntegrate[*x]" => "cannotintegrate(*x)",
-"Coeff[*x]" => "coeff(*x)",
-"Coefficient[*x]" => "coefficient(*x)",
-"ComplexFreeQ[*x]" => "complexfreeq(*x)",
-"Complex[*x]" => "complex(*x)",
-"CosIntegral[*x]" => "cosintegral(*x)",
-"Cos[*x]" => "cos(*x)",
-"CoshIntegral[*x]" => "coshintegral(*x)",
-"Cosh[*x]" => "cosh(*x)",
-"Cot[*x]" => "cot(*x)",
-"Coth[*x]" => "coth(*x)",
-"Csc[*x]" => "csc(*x)",
-"Csch[*x]" => "csch(*x)",
-"D[*x]" => "d(*x)",
-"DeactivateTrig[*x]" => "deactivatetrig(*x)",
-"Denom[*x]" => "denom(*x)",
-"Denominator[*x]" => "denominator(*x)",
-"DerivativeDivides[*x]" => "derivativedivides(*x)",
-"Derivative[*x]" => "derivative(*x)",
-"Discriminant[*x]" => "discriminant(*x)",
-"Dist[*x]" => "dist(*x)",
-"Distrib[*x]" => "distrib(*x)",
-"DistributeDegree[*x]" => "distributedegree(*x)",
-"Divides[*x]" => "divides(*x)",
-"EllipticE[*x]" => "elliptice(*x)",
-"EllipticF[*x]" => "ellipticf(*x)",
-"EllipticPi[*x]" => "ellipticpi(*x)",
-"EqQ[*x]" => "eqq(*x)",
-"Erf[*x]" => "erf(*x)",
-"Erfc[*x]" => "erfc(*x)",
-"Erfi[*x]" => "erfi(*x)",
-"EulerIntegrandQ[*x]" => "eulerintegrandq(*x)",
-"EveryQ[*x]" => "everyq(*x)",
-"ExpIntegralE[*x]" => "expintegrale(*x)",
-"ExpIntegralEi[*x]" => "expintegralei(*x)",
-"Exp[*x]" => "exp(*x)",
-"ExpandExpression[*x]" => "expandexpression(*x)",
-"ExpandIntegrand[*x]" => "expandintegrand(*x)",
-"ExpandLinearProduct[*x]" => "expandlinearproduct(*x)",
-"ExpandToSum[*x]" => "expandtosum(*x)",
-"ExpandTrigExpand[*x]" => "expandtrigexpand(*x)",
-"ExpandTrigReduce[*x]" => "expandtrigreduce(*x)",
-"ExpandTrigToExp[*x]" => "expandtrigtoexp(*x)",
-"ExpandTrig[*x]" => "expandtrig(*x)",
-"Expand[*x]" => "expand(*x)",
-"Expon[*x]" => "expon(*x)",
-"Exponent[*x]" => "exponent(*x)",
-"F[*x]" => "f(*x)",
-"F_[*x]" => "f_(*x)",
-"Factor[*x]" => "factor(*x)",
-"FalseQ[*x]" => "falseq(*x)",
-"Floor[*x]" => "floor(*x)",
-"FracPart[*x]" => "fracpart(*x)",
-"FractionQ[*x]" => "fractionq(*x)",
-"FractionalPart[*x]" => "fractionalpart(*x)",
-"FreeFactors[*x]" => "freefactors(*x)",
-"FreeQ[*x]" => "freeq(*x)",
-"FresnelC[*x]" => "fresnelc(*x)",
-"FresnelS[*x]" => "fresnels(*x)",
-"FullSimplify[*x]" => "fullsimplify(*x)",
-"FunctionOfExponentialFunction[*x]" => "functionofexponentialfunction(*x)",
-"FunctionOfExponentialQ[*x]" => "functionofexponentialq(*x)",
-"FunctionOfExponential[*x]" => "functionofexponential(*x)",
-"FunctionOfLinear[*x]" => "functionoflinear(*x)",
-"FunctionOfLog[*x]" => "functionoflog(*x)",
-"FunctionOfQ[*x]" => "functionofq(*x)",
-"FunctionOfSquareRootOfQuadratic[*x]" => "functionofsquarerootofquadratic(*x)",
-"FunctionOfTrigOfLinearQ[*x]" => "functionoftrigoflinearq(*x)",
-"FunctionOfTrig[*x]" => "functionoftrig(*x)",
-"Function[*x]" => "function(*x)",
-"GCD[*x]" => "gcd(*x)",
-"G[*x]" => "g(*x)",
-"G_[*x]" => "g_(*x)",
-"Gamma[*x]" => "gamma(*x)",
-"GeQ[*x]" => "geq(*x)",
-"GeneralizedBinomialMatchQ[*x]" => "generalizedbinomialmatchq(*x)",
-"GeneralizedBinomialQ[*x]" => "generalizedbinomialq(*x)",
-"GeneralizedTrinomialDegree[*x]" => "generalizedtrinomialdegree(*x)",
-"GeneralizedTrinomialMatchQ[*x]" => "generalizedtrinomialmatchq(*x)",
-"GeneralizedTrinomialQ[*x]" => "generalizedtrinomialq(*x)",
-"GtQ[*x]" => "gtq(*x)",
-"H[*x]" => "h(*x)",
-"H_[*x]" => "h_(*x)",
-"HalfIntegerQ[*x]" => "halfintegerq(*x)",
-"Head[*x]" => "head(*x)",
-"Hold[*x]" => "hold(*x)",
-"HyperbolicQ[*x]" => "hyperbolicq(*x)",
-"Hypergeometric2F1[*x]" => "hypergeometric2f1(*x)",
-"HypergeometricPFQ[*x]" => "hypergeometricpfq(*x)",
-"IGeQ[*x]" => "igeq(*x)",
-"IGtQ[*x]" => "igtq(*x)",
-"ILeQ[*x]" => "ileq(*x)",
-"ILtQ[*x]" => "iltq(*x)",
-"Identity[*x]" => "identity(*x)",
-"If[*x]" => "if(*x)",
-"IndependentQ[*x]" => "independentq(*x)",
-"InertTrigFreeQ[*x]" => "inerttrigfreeq(*x)",
-"InertTrigQ[*x]" => "inerttrigq(*x)",
-"IntBinomialQ[*x]" => "intbinomialq(*x)",
-"IntHide[*x]" => "inthide(*x)",
-"IntLinearQ[*x]" => "intlinearq(*x)",
-"IntPart[*x]" => "intpart(*x)",
-"IntQuadraticQ[*x]" => "intquadraticq(*x)",
-"IntSum[*x]" => "intsum(*x)",
-"Int[*x]" => "int(*x)",
-"IntegerPart[*x]" => "integerpart(*x)",
-"IntegerQ[*x]" => "integerq(*x)",
-"IntegersQ[*x]" => "integersq(*x)",
-"IntegralFreeQ[*x]" => "integralfreeq(*x)",
-"Integral[*x]" => "integral(*x)",
-"Integrate[*x]" => "integrate(*x)",
-"InverseFunctionFreeQ[*x]" => "inversefunctionfreeq(*x)",
-"InverseFunctionOfLinear[*x]" => "inversefunctionoflinear(*x)",
-"InverseFunctionQ[*x]" => "inversefunctionq(*x)",
-"KnownCotangentIntegrandQ[*x]" => "knowncotangentintegrandq(*x)",
-"KnownSecantIntegrandQ[*x]" => "knownsecantintegrandq(*x)",
-"KnownSineIntegrandQ[*x]" => "knownsineintegrandq(*x)",
-"KnownTangentIntegrandQ[*x]" => "knowntangentintegrandq(*x)",
-"LeQ[*x]" => "leq(*x)",
-"LeafCount[*x]" => "leafcount(*x)",
-"LinearMatchQ[*x]" => "linearmatchq(*x)",
-"LinearPairQ[*x]" => "linearpairq(*x)",
-"LinearQ[*x]" => "linearq(*x)",
-"LogGamma[*x]" => "loggamma(*x)",
-"LogIntegral[*x]" => "logintegral(*x)",
-"Log[*x]" => "log(*x)",
-"LtQ[*x]" => "ltq(*x)",
-"MatchQ[*x]" => "matchq(*x)",
-"MemberQ[*x]" => "memberq(*x)",
-"MinimumMonomialExponent[*x]" => "minimummonomialexponent(*x)",
-"Mod[*x]" => "mod(*x)",
-"Module[*x]" => "module(*x)",
-"NeQ[*x]" => "neq(*x)",
-"NegQ[*x]" => "negq(*x)",
-"NiceSqrtQ[*x]" => "nicesqrtq(*x)",
-"NonfreeFactors[*x]" => "nonfreefactors(*x)",
-"NonsumQ[*x]" => "nonsumq(*x)",
-"NormalizeIntegrand[*x]" => "normalizeintegrand(*x)",
-"NormalizePowerOfLinear[*x]" => "normalizepoweroflinear(*x)",
-"NormalizePseudoBinomial[*x]" => "normalizepseudobinomial(*x)",
-"Not[*x]" => "not(*x)",
-"Numer[*x]" => "numer(*x)",
-"Numerator[*x]" => "numerator(*x)",
-"OddQ[*x]" => "oddq(*x)",
-"PerfectSquareQ[*x]" => "perfectsquareq(*x)",
-"PiecewiseLinearQ[*x]" => "piecewiselinearq(*x)",
-"PolyGCD[*x]" => "polygcd(*x)",
-"PolyGamma[*x]" => "polygamma(*x)",
-"PolyLog[*x]" => "polylog(*x)",
-"PolyQ[*x]" => "polyq(*x)",
-"PolynomialDivide[*x]" => "polynomialdivide(*x)",
-"PolynomialInQ[*x]" => "polynomialinq(*x)",
-"PolynomialInSubst[*x]" => "polynomialinsubst(*x)",
-"PolynomialQ[*x]" => "polynomialq(*x)",
-"PolynomialQuotient[*x]" => "polynomialquotient(*x)",
-"PolynomialRemainder[*x]" => "polynomialremainder(*x)",
-"PosQ[*x]" => "posq(*x)",
-"PowerOfLinearMatchQ[*x]" => "poweroflinearmatchq(*x)",
-"PowerOfLinearQ[*x]" => "poweroflinearq(*x)",
-"PowerQ[*x]" => "powerq(*x)",
-"PowerVariableExpn[*x]" => "powervariableexpn(*x)",
-"ProductLog[*x]" => "productlog(*x)",
-"ProductQ[*x]" => "productq(*x)",
-"PseudoBinomialPairQ[*x]" => "pseudobinomialpairq(*x)",
-"QuadraticMatchQ[*x]" => "quadraticmatchq(*x)",
-"QuadraticProductQ[*x]" => "quadraticproductq(*x)",
-"QuadraticQ[*x]" => "quadraticq(*x)",
-"QuotientOfLinearsParts[*x]" => "quotientoflinearsparts(*x)",
-"QuotientOfLinearsQ[*x]" => "quotientoflinearsq(*x)",
-"Quotient[*x]" => "quotient(*x)",
-"RationalFunctionExpand[*x]" => "rationalfunctionexpand(*x)",
-"RationalFunctionExponents[*x]" => "rationalfunctionexponents(*x)",
-"RationalFunctionQ[*x]" => "rationalfunctionq(*x)",
-"RationalQ[*x]" => "rationalq(*x)",
-"RemoveContent[*x]" => "removecontent(*x)",
-"ReplaceAll[*x]" => "replaceall(*x)",
-"Rt[*x]" => "rt(*x)",
-"Sec[*x]" => "sec(*x)",
-"Sech[*x]" => "sech(*x)",
-"ShowStep[*x]" => "showstep(*x)",
-"Sign[*x]" => "sign(*x)",
-"Simp[*x]" => "simp(*x)",
-"SimplerIntegrandQ[*x]" => "simplerintegrandq(*x)",
-"SimplerQ[*x]" => "simplerq(*x)",
-"SimplerSqrtQ[*x]" => "simplersqrtq(*x)",
-"SimplifyIntegrand[*x]" => "simplifyintegrand(*x)",
-"Simplify[*x]" => "simplify(*x)",
-"SinIntegral[*x]" => "sinintegral(*x)",
-"Sin[*x]" => "sin(*x)",
-"SinhIntegral[*x]" => "sinhintegral(*x)",
-"Sinh[*x]" => "sinh(*x)",
-"SplitProduct[*x]" => "splitproduct(*x)",
-"Sqrt[*x]" => "sqrt(*x)",
-"SubstForFractionalPowerOfLinear[*x]" => "substforfractionalpoweroflinear(*x)",
-"SubstForFractionalPowerOfQuotientOfLinears[*x]" => "substforfractionalpowerofquotientoflinears(*x)",
-"SubstForFractionalPowerQ[*x]" => "substforfractionalpowerq(*x)",
-"SubstForInverseFunction[*x]" => "substforinversefunction(*x)",
-"SubstFor[*x]" => "substfor(*x)",
-"Subst[*x]" => "subst(*x)",
-"SumQ[*x]" => "sumq(*x)",
-"SumSimplerQ[*x]" => "sumsimplerq(*x)",
-"Sum[*x]" => "sum(*x)",
-"Tan[*x]" => "tan(*x)",
-"Tanh[*x]" => "tanh(*x)",
-"Together[*x]" => "together(*x)",
-"TrigQ[*x]" => "trigq(*x)",
-"TrigSimplifyQ[*x]" => "trigsimplifyq(*x)",
-"TrigSimplify[*x]" => "trigsimplify(*x)",
-"TrinomialMatchQ[*x]" => "trinomialmatchq(*x)",
-"TrinomialQ[*x]" => "trinomialq(*x)",
-"TryPureTanSubst[*x]" => "trypuretansubst(*x)",
-"Unintegrable[*x]" => "unintegrable(*x)",
-"With[*x]" => "with(*x)",
-"Zeta[*x]" => "zeta(*x)",
-"cos[*x]" => "cos(*x)",
-"cot[*x]" => "cot(*x)",
-"csc[*x]" => "csc(*x)",
-"f[*x]" => "f(*x)",
-"f_[*x]" => "f_(*x)",
-"g[*x]" => "g(*x)",
-"g_[*x]" => "g_(*x)",
-"lst[*x]" => "lst(*x)",
-"sec[*x]" => "sec(*x)",
-"sin[*x]" => "sin(*x)", 
-"tan[*x]" => "tan(*x)", 
-"tmp[*x]" => "tmp(*x)", 
-"trig_[*x]" => "trig_(*x)", 
-"uu[*x]" => "uu(*x)");
+	"Abs[*x]" => "abs(*x)",
+	"ActivateTrig[*x]" => "activatetrig(*x)",
+	"AlgebraicFunctionQ[*x]" => "algebraicfunctionq(*x)",
+	"Apart[*x]" => "apart(*x)",
+	"AppellF1[*x]" => "appellf1(*x)",
+	"ArcCos[*x]" => "arccos(*x)",
+	"ArcCosh[*x]" => "arccosh(*x)",
+	"ArcCot[*x]" => "arccot(*x)",
+	"ArcCoth[*x]" => "arccoth(*x)",
+	"ArcCsc[*x]" => "arccsc(*x)",
+	"ArcCsch[*x]" => "arccsch(*x)",
+	"ArcSec[*x]" => "arcsec(*x)",
+	"ArcSech[*x]" => "arcsech(*x)",
+	"ArcSin[*x]" => "arcsin(*x)",
+	"ArcSinh[*x]" => "arcsinh(*x)",
+	"ArcTan[*x]" => "arctan(*x)",
+	"ArcTanh[*x]" => "arctanh(*x)",
+	"AtomQ[*x]" => "atomq(*x)",
+	"BesselJ[*x]" => "besselj(*x)",
+	"BinomialDegree[*x]" => "binomialdegree(*x)",
+	"BinomialMatchQ[*x]" => "binomialmatchq(*x)",
+	"BinomialParts[*x]" => "binomialparts(*x)",
+	"BinomialQ[*x]" => "binomialq(*x)",
+	"Block[*x]" => "block(*x)",
+	"CalculusFreeQ[*x]" => "calculusfreeq(*x)",
+	"Cancel[*x]" => "cancel(*x)",
+	"CannotIntegrate[*x]" => "cannotintegrate(*x)",
+	"Coeff[*x]" => "coeff(*x)",
+	"Coefficient[*x]" => "coefficient(*x)",
+	"ComplexFreeQ[*x]" => "complexfreeq(*x)",
+	"Complex[*x]" => "complex(*x)",
+	"CosIntegral[*x]" => "cosintegral(*x)",
+	"Cos[*x]" => "cos(*x)",
+	"CoshIntegral[*x]" => "coshintegral(*x)",
+	"Cosh[*x]" => "cosh(*x)",
+	"Cot[*x]" => "cot(*x)",
+	"Coth[*x]" => "coth(*x)",
+	"Csc[*x]" => "csc(*x)",
+	"Csch[*x]" => "csch(*x)",
+	"D[*x]" => "d(*x)",
+	"DeactivateTrig[*x]" => "deactivatetrig(*x)",
+	"Denom[*x]" => "denom(*x)",
+	"Denominator[*x]" => "denominator(*x)",
+	"DerivativeDivides[*x]" => "derivativedivides(*x)",
+	"Derivative[*x]" => "derivative(*x)",
+	"Discriminant[*x]" => "discriminant(*x)",
+	"Dist[*x]" => "dist(*x)",
+	"Distrib[*x]" => "distrib(*x)",
+	"DistributeDegree[*x]" => "distributedegree(*x)",
+	"Divides[*x]" => "divides(*x)",
+	"EllipticE[*x]" => "elliptice(*x)",
+	"EllipticF[*x]" => "ellipticf(*x)",
+	"EllipticPi[*x]" => "ellipticpi(*x)",
+	"EqQ[*x]" => "eqq(*x)",
+	"Erf[*x]" => "erf(*x)",
+	"Erfc[*x]" => "erfc(*x)",
+	"Erfi[*x]" => "erfi(*x)",
+	"EulerIntegrandQ[*x]" => "eulerintegrandq(*x)",
+	"EveryQ[*x]" => "everyq(*x)",
+	"ExpIntegralE[*x]" => "expintegrale(*x)",
+	"ExpIntegralEi[*x]" => "expintegralei(*x)",
+	"Exp[*x]" => "exp(*x)",
+	"ExpandExpression[*x]" => "expandexpression(*x)",
+	"ExpandIntegrand[*x]" => "expandintegrand(*x)",
+	"ExpandLinearProduct[*x]" => "expandlinearproduct(*x)",
+	"ExpandToSum[*x]" => "expandtosum(*x)",
+	"ExpandTrigExpand[*x]" => "expandtrigexpand(*x)",
+	"ExpandTrigReduce[*x]" => "expandtrigreduce(*x)",
+	"ExpandTrigToExp[*x]" => "expandtrigtoexp(*x)",
+	"ExpandTrig[*x]" => "expandtrig(*x)",
+	"Expand[*x]" => "expand(*x)",
+	"Expon[*x]" => "expon(*x)",
+	"Exponent[*x]" => "exponent(*x)",
+	"F[*x]" => "f(*x)",
+	"F_[*x]" => "f_(*x)",
+	"Factor[*x]" => "factor(*x)",
+	"FalseQ[*x]" => "falseq(*x)",
+	"Floor[*x]" => "floor(*x)",
+	"FracPart[*x]" => "fracpart(*x)",
+	"FractionQ[*x]" => "fractionq(*x)",
+	"FractionalPart[*x]" => "fractionalpart(*x)",
+	"FreeFactors[*x]" => "freefactors(*x)",
+	"FreeQ[*x]" => "freeq(*x)",
+	"FresnelC[*x]" => "fresnelc(*x)",
+	"FresnelS[*x]" => "fresnels(*x)",
+	"FullSimplify[*x]" => "fullsimplify(*x)",
+	"FunctionOfExponentialFunction[*x]" => "functionofexponentialfunction(*x)",
+	"FunctionOfExponentialQ[*x]" => "functionofexponentialq(*x)",
+	"FunctionOfExponential[*x]" => "functionofexponential(*x)",
+	"FunctionOfLinear[*x]" => "functionoflinear(*x)",
+	"FunctionOfLog[*x]" => "functionoflog(*x)",
+	"FunctionOfQ[*x]" => "functionofq(*x)",
+	"FunctionOfSquareRootOfQuadratic[*x]" => "functionofsquarerootofquadratic(*x)",
+	"FunctionOfTrigOfLinearQ[*x]" => "functionoftrigoflinearq(*x)",
+	"FunctionOfTrig[*x]" => "functionoftrig(*x)",
+	"Function[*x]" => "function(*x)",
+	"GCD[*x]" => "gcd(*x)",
+	"G[*x]" => "g(*x)",
+	"G_[*x]" => "g_(*x)",
+	"Gamma[*x]" => "gamma(*x)",
+	"GeQ[*x]" => "geq(*x)",
+	"GeneralizedBinomialMatchQ[*x]" => "generalizedbinomialmatchq(*x)",
+	"GeneralizedBinomialQ[*x]" => "generalizedbinomialq(*x)",
+	"GeneralizedTrinomialDegree[*x]" => "generalizedtrinomialdegree(*x)",
+	"GeneralizedTrinomialMatchQ[*x]" => "generalizedtrinomialmatchq(*x)",
+	"GeneralizedTrinomialQ[*x]" => "generalizedtrinomialq(*x)",
+	"GtQ[*x]" => "gtq(*x)",
+	"H[*x]" => "h(*x)",
+	"H_[*x]" => "h_(*x)",
+	"HalfIntegerQ[*x]" => "halfintegerq(*x)",
+	"Head[*x]" => "head(*x)",
+	"Hold[*x]" => "hold(*x)",
+	"HyperbolicQ[*x]" => "hyperbolicq(*x)",
+	"Hypergeometric2F1[*x]" => "hypergeometric2f1(*x)",
+	"HypergeometricPFQ[*x]" => "hypergeometricpfq(*x)",
+	"IGeQ[*x]" => "igeq(*x)",
+	"IGtQ[*x]" => "igtq(*x)",
+	"ILeQ[*x]" => "ileq(*x)",
+	"ILtQ[*x]" => "iltq(*x)",
+	"Identity[*x]" => "identity(*x)",
+	"If[*x]" => "if(*x)",
+	"IndependentQ[*x]" => "independentq(*x)",
+	"InertTrigFreeQ[*x]" => "inerttrigfreeq(*x)",
+	"InertTrigQ[*x]" => "inerttrigq(*x)",
+	"IntBinomialQ[*x]" => "intbinomialq(*x)",
+	"IntHide[*x]" => "inthide(*x)",
+	"IntLinearQ[*x]" => "intlinearq(*x)",
+	"IntPart[*x]" => "intpart(*x)",
+	"IntQuadraticQ[*x]" => "intquadraticq(*x)",
+	"IntSum[*x]" => "intsum(*x)",
+	"Int[*x]" => "int(*x)",
+	"IntegerPart[*x]" => "integerpart(*x)",
+	"IntegerQ[*x]" => "integerq(*x)",
+	"IntegersQ[*x]" => "integersq(*x)",
+	"IntegralFreeQ[*x]" => "integralfreeq(*x)",
+	"Integral[*x]" => "integral(*x)",
+	"Integrate[*x]" => "integrate(*x)",
+	"InverseFunctionFreeQ[*x]" => "inversefunctionfreeq(*x)",
+	"InverseFunctionOfLinear[*x]" => "inversefunctionoflinear(*x)",
+	"InverseFunctionQ[*x]" => "inversefunctionq(*x)",
+	"KnownCotangentIntegrandQ[*x]" => "knowncotangentintegrandq(*x)",
+	"KnownSecantIntegrandQ[*x]" => "knownsecantintegrandq(*x)",
+	"KnownSineIntegrandQ[*x]" => "knownsineintegrandq(*x)",
+	"KnownTangentIntegrandQ[*x]" => "knowntangentintegrandq(*x)",
+	"LeQ[*x]" => "leq(*x)",
+	"LeafCount[*x]" => "leafcount(*x)",
+	"LinearMatchQ[*x]" => "linearmatchq(*x)",
+	"LinearPairQ[*x]" => "linearpairq(*x)",
+	"LinearQ[*x]" => "linearq(*x)",
+	"LogGamma[*x]" => "loggamma(*x)",
+	"LogIntegral[*x]" => "logintegral(*x)",
+	"Log[*x]" => "log(*x)",
+	"LtQ[*x]" => "ltq(*x)",
+	"MatchQ[*x]" => "matchq(*x)",
+	"MemberQ[*x]" => "memberq(*x)",
+	"MinimumMonomialExponent[*x]" => "minimummonomialexponent(*x)",
+	"Mod[*x]" => "mod(*x)",
+	"Module[*x]" => "module(*x)",
+	"NeQ[*x]" => "neq(*x)",
+	"NegQ[*x]" => "negq(*x)",
+	"NiceSqrtQ[*x]" => "nicesqrtq(*x)",
+	"NonfreeFactors[*x]" => "nonfreefactors(*x)",
+	"NonsumQ[*x]" => "nonsumq(*x)",
+	"NormalizeIntegrand[*x]" => "normalizeintegrand(*x)",
+	"NormalizePowerOfLinear[*x]" => "normalizepoweroflinear(*x)",
+	"NormalizePseudoBinomial[*x]" => "normalizepseudobinomial(*x)",
+	"Not[*x]" => "not(*x)",
+	"Numer[*x]" => "numer(*x)",
+	"Numerator[*x]" => "numerator(*x)",
+	"OddQ[*x]" => "oddq(*x)",
+	"PerfectSquareQ[*x]" => "perfectsquareq(*x)",
+	"PiecewiseLinearQ[*x]" => "piecewiselinearq(*x)",
+	"PolyGCD[*x]" => "polygcd(*x)",
+	"PolyGamma[*x]" => "polygamma(*x)",
+	"PolyLog[*x]" => "polylog(*x)",
+	"PolyQ[*x]" => "polyq(*x)",
+	"PolynomialDivide[*x]" => "polynomialdivide(*x)",
+	"PolynomialInQ[*x]" => "polynomialinq(*x)",
+	"PolynomialInSubst[*x]" => "polynomialinsubst(*x)",
+	"PolynomialQ[*x]" => "polynomialq(*x)",
+	"PolynomialQuotient[*x]" => "polynomialquotient(*x)",
+	"PolynomialRemainder[*x]" => "polynomialremainder(*x)",
+	"PosQ[*x]" => "posq(*x)",
+	"PowerOfLinearMatchQ[*x]" => "poweroflinearmatchq(*x)",
+	"PowerOfLinearQ[*x]" => "poweroflinearq(*x)",
+	"PowerQ[*x]" => "powerq(*x)",
+	"PowerVariableExpn[*x]" => "powervariableexpn(*x)",
+	"ProductLog[*x]" => "productlog(*x)",
+	"ProductQ[*x]" => "productq(*x)",
+	"PseudoBinomialPairQ[*x]" => "pseudobinomialpairq(*x)",
+	"QuadraticMatchQ[*x]" => "quadraticmatchq(*x)",
+	"QuadraticProductQ[*x]" => "quadraticproductq(*x)",
+	"QuadraticQ[*x]" => "quadraticq(*x)",
+	"QuotientOfLinearsParts[*x]" => "quotientoflinearsparts(*x)",
+	"QuotientOfLinearsQ[*x]" => "quotientoflinearsq(*x)",
+	"Quotient[*x]" => "quotient(*x)",
+	"RationalFunctionExpand[*x]" => "rationalfunctionexpand(*x)",
+	"RationalFunctionExponents[*x]" => "rationalfunctionexponents(*x)",
+	"RationalFunctionQ[*x]" => "rationalfunctionq(*x)",
+	"RationalQ[*x]" => "rationalq(*x)",
+	"RemoveContent[*x]" => "removecontent(*x)",
+	"ReplaceAll[*x]" => "replaceall(*x)",
+	"Rt[*x]" => "rt(*x)",
+	"Sec[*x]" => "sec(*x)",
+	"Sech[*x]" => "sech(*x)",
+	"ShowStep[*x]" => "showstep(*x)",
+	"Sign[*x]" => "sign(*x)",
+	"Simp[*x]" => "simp(*x)",
+	"SimplerIntegrandQ[*x]" => "simplerintegrandq(*x)",
+	"SimplerQ[*x]" => "simplerq(*x)",
+	"SimplerSqrtQ[*x]" => "simplersqrtq(*x)",
+	"SimplifyIntegrand[*x]" => "simplifyintegrand(*x)",
+	"Simplify[*x]" => "simplify(*x)",
+	"SinIntegral[*x]" => "sinintegral(*x)",
+	"Sin[*x]" => "sin(*x)",
+	"SinhIntegral[*x]" => "sinhintegral(*x)",
+	"Sinh[*x]" => "sinh(*x)",
+	"SplitProduct[*x]" => "splitproduct(*x)",
+	"Sqrt[*x]" => "sqrt(*x)",
+	"SubstForFractionalPowerOfLinear[*x]" => "substforfractionalpoweroflinear(*x)",
+	"SubstForFractionalPowerOfQuotientOfLinears[*x]" => "substforfractionalpowerofquotientoflinears(*x)",
+	"SubstForFractionalPowerQ[*x]" => "substforfractionalpowerq(*x)",
+	"SubstForInverseFunction[*x]" => "substforinversefunction(*x)",
+	"SubstFor[*x]" => "substfor(*x)",
+	"Subst[*x]" => "subst(*x)",
+	"SumQ[*x]" => "sumq(*x)",
+	"SumSimplerQ[*x]" => "sumsimplerq(*x)",
+	"Sum[*x]" => "sum(*x)",
+	"Tan[*x]" => "tan(*x)",
+	"Tanh[*x]" => "tanh(*x)",
+	"Together[*x]" => "together(*x)",
+	"TrigQ[*x]" => "trigq(*x)",
+	"TrigSimplifyQ[*x]" => "trigsimplifyq(*x)",
+	"TrigSimplify[*x]" => "trigsimplify(*x)",
+	"TrinomialMatchQ[*x]" => "trinomialmatchq(*x)",
+	"TrinomialQ[*x]" => "trinomialq(*x)",
+	"TryPureTanSubst[*x]" => "trypuretansubst(*x)",
+	"Unintegrable[*x]" => "unintegrable(*x)",
+	"With[*x]" => "with(*x)",
+	"Zeta[*x]" => "zeta(*x)",
+	"cos[*x]" => "cos(*x)",
+	"cot[*x]" => "cot(*x)",
+	"csc[*x]" => "csc(*x)",
+	"f[*x]" => "f(*x)",
+	"f_[*x]" => "f_(*x)",
+	"g[*x]" => "g(*x)",
+	"g_[*x]" => "g_(*x)",
+	"lst[*x]" => "lst(*x)",
+	"sec[*x]" => "sec(*x)",
+	"sin[*x]" => "sin(*x)", 
+	"tan[*x]" => "tan(*x)", 
+	"tmp[*x]" => "tmp(*x)", 
+	"trig_[*x]" => "trig_(*x)", 
+	"uu[*x]" => "uu(*x)",
+);
 
 @test "integrate(x,x)" == parsetosympy("Int[x,x]",sympydictfixes)
 "integrate(x,x)"
@@ -774,5 +778,119 @@ funcdicts = Dict(
 steps = [length(v.steps) != 2 for v in vtests]
 @test count(steps) == length(vtests)
 
+## New parsing method ============================================================
+# https://discourse.julialang.org/t/best-practices-for-converting-a-mathematica-expression-to-julia/18335
+const sympy_parsing_mathematica = SymPy.PyCall.pyimport("sympy.parsing.mathematica")
+mathematica2julia(s::AbstractString, substitutions::Pair{<:AbstractString,<:AbstractString}...) =
+SymPy.walk_expression(sympy_parsing_mathematica."mathematica"(s, Dict(substitutions...)))
+
+mathematica2julia(s::AbstractString) = mathematica2julia(s, m2j_subs...)
+
+# Pull data from func_subs file to create substitution pairs
+#= #TODO: functions to add
+	- Derivative
+	- Hypergeometric2F1
+	- f'[x]
+=#
+m2j_subs = [r[1] => r[2] for r in  eachrow(readdlm("func_subs.csv", ';', String))]
+
+function m2j(s::AbstractString; verbose=true)
+	try
+		return mathematica2julia(s)
+	catch e
+		verbose && @warn "Couldn't parse:\n$(s)\n"
+		# @error e
+		return "Parse Error"
+	end	
+end
+
+@show m2j("Csc[x + Sin[x]]")
+@show m2j("Sin[2*x]")
+@show m2j("EllipticF[1, 0.5]")
+@show m2j("Csc[x + Sin[x]]")
+@show m2j("(2*I*Sqrt[2]*EllipticE[Pi/4 - (I*x)/2, 2] * Sqrt[Sinh[x]])/Sqrt[I*Sinh[x]]")
+@show m2j("((-Gamma[-n, -Log[t]])*(-Log[t])^n)/Log[t]^n")
+@show m2j("(c + d*x)^0*PolyGamma[n, a + b*x]")
+@show m2j("(c + d*x)^1*ExpIntegralE[n, a + b*x]")
+@show m2j("Hypergeometric2F1[1/2, 1/2, 3/2, 1/2)")
+@show m2j("Derivative[n][f][x]")
+@show m2j("f'[x]")
 
 
+## Saving work as I go in a dataframe to make incremental changes
+fname = "test/conversion_data.csv"
+# df = DataFrame(vtests) # Initial creation
+df = DataFrame(CSV.File(fname))
+@show names(df)
+@show size(df)
+
+# filter!(x -> !x.iscomment, df);
+# failstrgs = ["CannotIntegrate", "Unintegrable"]
+# filter!(x -> !any(occursin.(failstrgs, x.optimal)), df);
+# transform!(df, :integrand => ByRow(m2j) => :juliaintegrand) # slooooow
+# @show size(df)
+# CSV.write(fname, df)
+# Save Point --------------------------------------------
+
+# @show size(df)
+# filter!(x -> x.juliaintegrand != "Parse Error", df);
+# @show size(df)
+# CSV.write(fname, df)
+# Save Point --------------------------------------------
+
+# filter!(x -> !occursin("Hypergeometric2F1", x.optimal), df); 	# Removes about 4000
+# filter!(x -> !occursin("VersionNumber", x.optimal), df); 		# Removes about 200
+# transform!(df, :optimal => ByRow(x -> m2j(x, verbose=false)) => :juliaoptimal) # slooooow
+# filter!(x -> x.juliaoptimal != "Parse Error", df);				# Removes about 3500
+# filter!(x -> x.juliaoptimal != "0", df);
+# @show size(df)
+# CSV.write(fname, df)
+# Save Point --------------------------------------------
+
+create_local_path(s) = joinpath("test", split(s, "\\")[2:end-1]...)
+create_fname(s) = replace(split(s, "\\")[end], ".m"=>".jl")
+local_path) => :outputpath)
+transform!(df, :path => ByRow(create_fname) => :outputfname)
+
+# Makes all the directories, only need to run once if the folders are deleted
+# unique(df.outputpath) .|> mkpath 
+
+
+## Write a test files =======================================================
+
+preamble = """
+using Rubin
+using Tests
+using Elliptic
+using HypergeometricFunctions
+using Polylogarithms
+using SpecialFunctions\n
+"""
+
+gdf = groupby(df, :outputfname);
+
+function fix_syntax(s)
+	s = replace(s, " "=> "") # Remove spaces
+	s = replace(s, "__" => ".")
+end
+
+for ((fn,), group) in pairs(gdf)
+	N,M = size(group)
+    @info "$N\ttests\tCreating File: $fn"
+
+	outpath = joinpath(first(group.outputpath), fn)
+
+	open(outpath, "w") do io
+		write(io, preamble)
+		for t in eachrow(group)
+			i = fix_syntax(t[:juliaintegrand])
+			v = t[:variable]
+			o = fix_syntax(t[:juliaoptimal])
+			write(io, "@test integrate($i, $v) == :($o)\n")
+		end
+	end
+
+end
+println("Complete")
+
+## TODO make a smaller test Suite in a single file
