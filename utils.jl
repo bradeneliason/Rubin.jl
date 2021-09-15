@@ -26,7 +26,7 @@ using DataFrames
 # TODO mark as constants
 rubi = artifact"Rubi"
 rubitests = artifact"RubiTests"
-rubidir = FileTree(rubi)
+rubidir = FileTree(rubi);
 abstract type AbstractRubiParser end
 struct RubiRules <: AbstractRubiParser end
 struct RubiTests <: AbstractRubiParser end
@@ -435,31 +435,31 @@ end
 ### Notes:
 # Once I have a symbolic sympy expression, I can just turn it into a Julia
 # Julia string with `str(y)`:
-sympy = pyimport("sympy")
-str = py"'Sin[x]^2'";
-mathparser = sympy.parsing.mathematica.mathematica
-y = maths(str)
-res = string(y) # 🚀
-@test "sin(x)^2" == res
+# sympy = pyimport("sympy")
+# str = py"'Sin[x]^2'";
+# mathparser = sympy.parsing.mathematica.mathematica
+# y = maths(str)
+# res = string(y) # 🚀
+# @test "sin(x)^2" == res
 
 ## Parser hijinks:
 # Ugh - the sympy.mathematica parser does not accept Int[ ... :(
 # No worries 😅, we can pass in a PyDict with our prefs and have it work!
-function parsetosympy(s,d)
-	s = pystring(PyObject(s))
-    f = sympy.parsing.mathematica.mathematica
-    f(s,d)
-end
+# function parsetosympy(s,d)
+# 	s = pystring(PyObject(s))
+#     f = sympy.parsing.mathematica.mathematica
+#     f(s,d)
+# end
 
 ## Parser hijinks: Sympy doesn't translate all functions :/
 # Need to grep for the function names in rubirules.json and add them to the below dict
 #mathfuncs = readlines("mathematicafunctions2.txt")
-mathfuncsdictionary = Dict(i * "*x]" => lowercase(i[1:end-1]) * "(*x)" for i in readlines("mathematicafunctions2.txt"))
+# mathfuncsdictionary = Dict(i * "*x]" => lowercase(i[1:end-1]) * "(*x)" for i in readlines("mathematicafunctions2.txt"))
 
-function mathfuncsdict()
-	mathfuncs = readlines("mathematicafunctions2.txt")
-#	ps = 
-end
+# function mathfuncsdict()
+# 	mathfuncs = readlines("mathematicafunctions2.txt")
+# #	ps = 
+# end
 
 # note the *x to slurp all args
 sympydictfixes = PyDict(Dict("Int[*x]" => "integrate(*x)",
@@ -767,16 +767,16 @@ funcdicts = Dict(
 	"uu[*x]" => "uu(*x)",
 );
 
-@test "integrate(x,x)" == parsetosympy("Int[x,x]",sympydictfixes)
-"integrate(x,x)"
+# @test "integrate(x,x)" == parsetosympy("Int[x,x]",sympydictfixes)
+# "integrate(x,x)"
 
 ## Parser hijinks:
 # 1. Need to strip underscores and `x_Symbol` 
 
 ### OOPS:
 # It is clear that many of the "steps" field are being mangled horribly
-steps = [length(v.steps) != 2 for v in vtests]
-@test count(steps) == length(vtests)
+# steps = [length(v.steps) != 2 for v in vtests]
+# @test count(steps) == length(vtests)
 
 ## New parsing method ============================================================
 # https://discourse.julialang.org/t/best-practices-for-converting-a-mathematica-expression-to-julia/18335
@@ -791,6 +791,7 @@ mathematica2julia(s::AbstractString) = mathematica2julia(s, m2j_subs...)
 	- Derivative
 	- Hypergeometric2F1
 	- f'[x]
+	- Double check functions that might come from SpecialFunctions.jl, etc.
 =#
 m2j_subs = [r[1] => r[2] for r in  eachrow(readdlm("func_subs.csv", ';', String))]
 
@@ -818,6 +819,7 @@ end
 
 
 ## Saving work as I go in a dataframe to make incremental changes
+# Getting rid of any tests that don't work right now.
 fname = "test/conversion_data.csv"
 # df = DataFrame(vtests) # Initial creation
 df = DataFrame(CSV.File(fname))
@@ -918,3 +920,181 @@ open(outpath, "w") do io
 	end
 end
 
+##################################################################
+## Chapter 4: Parsing Utility Functions
+#
+# Mathematica pattern strings:
+# 	⋅ _			any single expression
+# 	⋅ x_		any single expression, to be named x
+# 	⋅ __		any sequence of one or more expressions
+# 	⋅ x__		sequence named x
+# 	⋅ x__h		sequence of expressions, all of whose heads are h
+# 	⋅ ___		any sequence of zero or more expressions
+# 	⋅ x___		sequence of zero or more expressions named x
+# 	⋅ x___h		sequence of zero or more expressions, all of whose heads are h 
+#
+# Mathematica heads:
+# 	⋅ x_h		an expression with head h
+# 	⋅ x_Integer	an integer
+# 	⋅ x_Real	an approximate real number
+# 	⋅ x_Complex	a complex number
+# 	⋅ x_List	a list
+# 	⋅ x_Symbol	a symbol
+#
+# Conditions:
+# 	⋅ patt/;test		is a pattern which matches only if the evaluation of test yields True.
+# 	⋅ lhs:>rhs/;test	represents a rule which applies only if the evaluation of test yields True.
+# 	⋅ lhs:=rhs/;test	is a definition to be used only if test yields True.
+##################################################################
+struct RubiUtility <: AbstractRubiParser end
+
+"""
+ Sample input: IntHide[u_,x_Symbol] := Block[{\$ShowSteps=False,\$StepCounter=Null}, Int[u,x]]
+
+# Fields:
+	- name
+	- args
+	- eqtype
+	- defintion
+"""
+Base.@kwdef struct UtilFuncMethod
+	name::String = ""
+	args::String = ""
+	eqtype::String = ""
+	defintion::String = ""
+end
+
+# Create util function type from regex matches automatically
+UtilFuncMethod(re::RegexMatch) = UtilFuncMethod(re.captures...)
+Base.show(io::IO, m::UtilFuncMethod) = print(io, "$(m.name)$(m.args)$(m.eqtype)$(m.defintion)")
+
+# Needs for JSON3 to write a file
+StructTypes.StructType(::Type{UtilFuncMethod}) = StructTypes.StringType()
+
+"""
+Sample input: 
+	(* ::Subsection::Closed:: *)
+	(*TrigQ[u]*)
+
+
+	TrigQ::usage = "If u is an expression of the form F[v] where F is a circular trig function, TrigQ[u] returns True; else it returns False.";
+	\$TrigFunctions = {Sin, Cos, Tan, Cot, Sec, Csc};
+	TrigQ[u_] := MemberQ[\$TrigFunctions, If[AtomQ[u],u,Head[u]]]
+
+# Fields:
+	- funcname
+	- funlist
+	- usage
+	- methods
+"""
+Base.@kwdef struct IntUtilityFunc
+	funcname::String = ""
+	funlist::String = ""
+	usage::String = ""
+	methods::Vector{UtilFuncMethod} = []
+	section::String = ""
+end
+
+# Pretty printing of functions with methods
+function Base.show(io::IO, f::IntUtilityFunc) 
+	println(io, "$(f.funcname)")
+	length(f.usage) > 0 && println("\tUsage:\t$(f.usage)")
+	# f.methods |> enumerate .|> t -> println("  Method $(t[1]):  $(t[2])")
+end
+
+StructTypes.StructType(::Type{IntUtilityFunc}) = StructTypes.Struct()
+
+function write(utilfuncs::Vector{IntUtilityFunc}, ::Type{RubiUtility})
+	targetpath = joinpath(pkgdir(Rubin), "src", "rubiutils.json")
+	open(targetpath, "w") do f
+		JSON3.pretty(f, JSON3.write(utilfuncs))
+		println(f)
+	end
+end
+
+##
+# TODO: parse by section and subsection???
+# 	Requires splitting methods that doesn't eat the secregex
+# 	Handeling Item sections?
+#
+# TODO: Only 4 functions fail to match
+# 	⋅ IntegerPowerQ[u]					- no brackets
+# 	⋅ FractionalPowerQ[u]				- no brackets
+# 	⋅ ExpandBinomial[u,x]				- broken up into sections???
+# 	⋅ DeactivateInverseHyperbolic[u,x] 	- commented out
+#
+function Base.parse(file, ::Type{RubiUtility})
+	secregex = r"\(\* ::[S].*\*\)" # match get eaten during the split operation
+	
+	usageregex = r"""\S+::usage[\s="]+(.*)";"""
+	# Matches the usage lines and ...   ^ captures usage string
+	
+	funcheaderregex = r"\(\*(\w*\[.*\])\*\)\s?"
+	# Matches function header & ^ captures function name
+	
+	# funlistregex = r"(^\$\w+)(\s?=\s?)(\{.*\};)"
+	funlistregex = r"\$\w+\s?=\s?\{(.*)\};" # w/o captures
+	# Matches lists of functions
+
+	# sec1nameregex = r"\(\* ::Section.*\n\(\*([\w\s]+)\*\)"
+	# sec2nameregex = r"\(\* ::Subsection.*\n\(\*([\w\s]+)\*\)"
+	secnameregex = r"\(\*([\w\s]{2,})\*\)"
+	
+	# funclineregex = r"\n([A-Za-z0-9]+)(\[[:A-Za-z0-9_,\^\*\+\[\]]*\])(\s*[:=]+\s*)((?:.+\n)+)" # oneliner
+	funclineregex = r"
+	\n([A-Za-z0-9]+)					# captures method name staring on new line
+	(\[[:A-Za-z0-9_,\^\*\+\[\]]*\])		# captures methods arguments
+	(\s*[:=]+\s*)						# captures equality operator (:= or =)
+	((?:.+\n)+)							# captures multile lines of definition
+	"x
+	
+	utilcontents = read(file, String);
+	sections = split(utilcontents, secregex, keepempty=false)
+	
+	secname = ""
+	utilfuncs = IntUtilityFunc[]
+	for sec in sections[2:end]
+		snm = match(secnameregex, sec) 		# Update section name
+		if !isnothing(snm)
+			secname = snm.captures[1]
+		end
+
+		fhm = match(funcheaderregex, sec)	# Function header with name
+		isnothing(fhm) && continue
+		funcname = fhm.captures[1]
+		
+		flm = match(funlistregex, sec)		# Function list 
+		funlist = isnothing(flm) ? "" : string(flm.match)
+
+		usm = match(usageregex, sec)		# Usage string
+		usage = usm isa Nothing ? "" : usm.captures[1]
+		
+		# Get function methods
+		!occursin(funclineregex, sec) && (@warn "No methods detected for: $funcname"; continue)
+		# create a list of methods using dispatch on Regex 
+		methods = UtilFuncMethod.(eachmatch(funclineregex, sec))
+
+		# Push the utility function to the list
+		push!( utilfuncs, IntUtilityFunc(
+				funcname, 
+				funlist, 
+				usage, 
+				methods, 
+				secname
+			)
+		)
+	end
+	utilfuncs
+end
+
+function load(::Type{RubiUtility})
+	rubi = artifact"Rubi"
+	utilityfile = joinpath(rubi, "Rubi-4.16.1.0", "Rubi", "IntegrationUtilityFunctions.m")
+	parse(utilityfile, RubiUtility)
+end
+
+utilfuncs = load(RubiUtility);
+@test length(utilfuncs) >= 92
+
+# Writing the JSON file
+# json = write(utilfuncs, RubiUtility);

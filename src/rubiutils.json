@@ -1,0 +1,913 @@
+[
+  {
+      "methods": [
+                   "IntHide[u_,x_Symbol] :=\n  Block[{$ShowSteps=False,$StepCounter=Null}, Int[u,x]]\n"
+                 ],
+      "section": "",
+        "usage": "",
+     "funcname": "IntHide[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "EveryQ[func_,lst_] :=\n  Catch[Scan[Function[If[func[#],Null,Throw[False]]],lst];True]\n"
+                 ],
+      "section": "Mapping functions",
+        "usage": "",
+     "funcname": "EveryQ[func,lst]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "Map2[func_,lst1_,lst2_] :=\n  Module[{ii},\n    ReapList[Do[Sow[func[lst1[[ii]],lst2[[ii]]]],{ii,Length[lst1]}]]]\n"
+                 ],
+      "section": "Mapping functions",
+        "usage": "",
+     "funcname": "Map2[func,lst1,lst2]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "ReapList[u_] :=\n  With[{lst=Reap[u][[2]]},\n  If[lst==={}, lst, lst[[1]]]]\n"
+                 ],
+      "section": "Mapping functions",
+        "usage": "",
+     "funcname": "ReapList[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "FalseQ[False] = True;\nFalseQ[_] = False;\n"
+                 ],
+      "section": "Numerical type predicates",
+        "usage": "If u is False, FalseQ[u] returns True; else it returns False.",
+     "funcname": "FalseQ[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "IntegersQ[__Integer] = True;\nIntegersQ[__] = False;\n"
+                 ],
+      "section": "Numerical type predicates",
+        "usage": "If m, n, ... are explicit integers, IntegersQ[m,n,...] returns True; else it returns False.",
+     "funcname": "IntegersQ[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "HalfIntegerQ[u__] := Scan[Function[If[Head[#]===Rational && Denominator[#]==2,Null,Return[False]]],{u}]===Null\n"
+                 ],
+      "section": "Numerical type predicates",
+        "usage": "If m, n, ... are explicit half-integers, FractionQ[m,n,...] returns True; else it returns False.",
+     "funcname": "HalfIntegerQ[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "FractionQ[__Rational] = True;\nFractionQ[__] = False;\n"
+                 ],
+      "section": "Numerical type predicates",
+        "usage": "If m, n, ... are explicit fractions, FractionQ[m,n,...] returns True; else it returns False.",
+     "funcname": "FractionQ[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "RationalQ[u__] := Scan[Function[If[IntegerQ[#] || Head[#]===Rational,Null,Return[False]]],{u}]===Null\n"
+                 ],
+      "section": "Numerical type predicates",
+        "usage": "If m, n, ... are explicit integers or fractions, FractionQ[m,n,...] returns True; else it returns False.",
+     "funcname": "RationalQ[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "ComplexNumberQ[_Complex] = True;\nComplexNumberQ[_] = False;\n"
+                 ],
+      "section": "Numerical type predicates",
+        "usage": "If u an explicit complex number, ComplexNumberQ[u] returns True; else it returns False.",
+     "funcname": "ComplexNumberQ[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "FractionOrNegativeQ[u__] := Scan[Function[If[FractionQ[#] || IntegerQ[#] && #<0,Null,Return[False]]],{u}]===Null\n"
+                 ],
+      "section": "Numerical type predicates",
+        "usage": "If u a fraction or negative number, FractionOrNegativeQ[u] returns True; else it returns False.",
+     "funcname": "FractionOrNegativeQ[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "SqrtNumberQ[m_^n_] :=\n  IntegerQ[n] && SqrtNumberQ[m] || IntegerQ[n-1/2] && RationalQ[m]\n",
+                   "SqrtNumberQ[u_*v_] :=\n  SqrtNumberQ[u] && SqrtNumberQ[v]\n",
+                   "SqrtNumberQ[u_] :=\n  RationalQ[u] || u===I\n"
+                 ],
+      "section": "Numerical type predicates",
+        "usage": "If u is equivalent to the square-root of a rational number, SqrtNumberQ[u] returns True; else it returns False.",
+     "funcname": "SqrtNumberQ[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "SqrtNumberSumQ[u_] :=\n  SumQ[u] && SqrtNumberQ[First[u]] && SqrtNumberQ[Rest[u]] || \n  ProductQ[u] && SqrtNumberQ[First[u]] && SqrtNumberSumQ[Rest[u]]\n"
+                 ],
+      "section": "Numerical type predicates",
+        "usage": "If u is equivalent to the sum of square-root numbers, SqrtNumberSumQ[u] returns True; else it returns False.",
+     "funcname": "SqrtNumberSumQ[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "IndependentQ[u_,x_] :=\n  FreeQ[u,x]\n"
+                 ],
+      "section": "Numerical type predicates",
+        "usage": "",
+     "funcname": "IndependentQ[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "PowerQ[_Power] = True;\nPowerQ[_] = False;\n"
+                 ],
+      "section": "Expression type predicates",
+        "usage": "If u is a power, PowerQ[u] returns True; else it returns False.",
+     "funcname": "PowerQ[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "ProductQ[_Times] = True;\nProductQ[_] = False;\n"
+                 ],
+      "section": "Expression type predicates",
+        "usage": "If u is a product, ProductQ[u] returns True; else it returns False.",
+     "funcname": "ProductQ[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "SumQ[_Plus] = True;\nSumQ[_] = False;\n"
+                 ],
+      "section": "Expression type predicates",
+        "usage": "If u is a sum, SumQ[u] returns True; else it returns False.",
+     "funcname": "SumQ[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "NonsumQ[_Plus] = False;\nNonsumQ[_] = True;\n"
+                 ],
+      "section": "Expression type predicates",
+        "usage": "If u is not a sum, NonsumQ[u] returns True; else it returns False.",
+     "funcname": "NonsumQ[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "FractionalPowerFreeQ[u_] :=\n  If[AtomQ[u],\n    True,\n  If[FractionalPowerQ[u] && Not[AtomQ[u[[1]]]],\n    False,\n  Catch[Scan[Function[If[FractionalPowerFreeQ[#],Null,Throw[False]]],u];True]]]\n"
+                 ],
+      "section": "Expression type predicates",
+        "usage": "If u is free of fractional powers whose bases are not atoms, FractionalPowerFreeQ[u] returns True; else it returns False.",
+     "funcname": "FractionalPowerFreeQ[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "ComplexFreeQ[u_] :=\n  If[AtomQ[u],\n    Not[ComplexNumberQ[u]],\n  Scan[Function[If[ComplexFreeQ[#],Null,Return[False]]],u]===Null]\n"
+                 ],
+      "section": "Expression type predicates",
+        "usage": "If u is free of complex numbers, ComplexFreeQ[u] returns True; else it returns False.",
+     "funcname": "ComplexFreeQ[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "LogQ[u_] := Head[u]===Log\n"
+                 ],
+      "section": "Expression type predicates",
+        "usage": "If u is an expression of the form Log[v], LogQ[u] returns True; else it returns False.",
+     "funcname": "LogQ[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "TrigQ[u_] := MemberQ[$TrigFunctions, If[AtomQ[u],u,Head[u]]]\n"
+                 ],
+      "section": "Expression type predicates",
+        "usage": "If u is an expression of the form F[v] where F is a circular trig function, TrigQ[u] returns True; else it returns False.",
+     "funcname": "TrigQ[u]",
+      "funlist": "$TrigFunctions = {Sin, Cos, Tan, Cot, Sec, Csc};"
+  },
+  {
+      "methods": [
+                   "HyperbolicQ[u_] := MemberQ[$HyperbolicFunctions, If[AtomQ[u],u,Head[u]]]\n"
+                 ],
+      "section": "Expression type predicates",
+        "usage": "If u is an expression of the form F[v] where F is a hyperbolic trig function, HyperbolicQ[u] returns True; else it returns False.",
+     "funcname": "HyperbolicQ[u]",
+      "funlist": "$HyperbolicFunctions = {Sinh, Cosh, Tanh, Coth, Sech, Csch};"
+  },
+  {
+      "methods": [
+                   "InverseTrigQ[u_] := MemberQ[$InverseTrigFunctions, If[AtomQ[u],u,Head[u]]]\n"
+                 ],
+      "section": "Expression type predicates",
+        "usage": "If u is an expression of the form F[v] where F is an inverse circular trig function, InverseTrigQ[u] returns True; else it returns False.",
+     "funcname": "InverseTrigQ[u]",
+      "funlist": "$InverseTrigFunctions = {ArcSin, ArcCos, ArcTan, ArcCot, ArcSec, ArcCsc};"
+  },
+  {
+      "methods": [
+                   "InverseHyperbolicQ[u_] := MemberQ[$InverseHyperbolicFunctions, If[AtomQ[u],u,Head[u]]]\n"
+                 ],
+      "section": "Expression type predicates",
+        "usage": "If u is an expression of the form F[v] where F is an inverse hyperbolic trig function, InverseHyperbolicQ[u] returns True; else it returns False.",
+     "funcname": "InverseHyperbolicQ[u]",
+      "funlist": "$InverseHyperbolicFunctions = {ArcSinh, ArcCosh, ArcTanh, ArcCoth, ArcSech, ArcCsch};"
+  },
+  {
+      "methods": [
+                   "CalculusQ[u_] := MemberQ[$CalculusFunctions, If[AtomQ[u],u,Head[u]]]\n",
+                   "StopFunctionQ[u_] :=\n  If[AtomQ[Head[u]],\n    MemberQ[$StopFunctions,Head[u]],\n  StopFunctionQ[Head[u]]]\n",
+                   "HeldFormQ[u_] :=\n  If[AtomQ[Head[u]],\n    MemberQ[$HeldFunctions,Head[u]],\n  HeldFormQ[Head[u]]]\n",
+                   "InverseFunctionQ[u_] :=\n  LogQ[u] || InverseTrigQ[u] && Length[u]<=1 || InverseHyperbolicQ[u] || Head[u]===Mods  || Head[u]===PolyLog \n",
+                   "TrigHyperbolicFreeQ[u_,x_Symbol] :=\n  If[AtomQ[u],\n    True,\n  If[TrigQ[u] || HyperbolicQ[u] || CalculusQ[u],\n    FreeQ[u,x],\n  Catch[Scan[Function[If[TrigHyperbolicFreeQ[#,x],Null,Throw[False]]],u];True]]]\n",
+                   "InverseFunctionFreeQ[u_,x_Symbol] :=\n  If[AtomQ[u],\n    True,\n  If[InverseFunctionQ[u] || CalculusQ[u] || Head[u]===Hypergeometric2F1 || Head[u]===AppellF1,\n    FreeQ[u,x],\n  Catch[Scan[Function[If[InverseFunctionFreeQ[#,x],Null,Throw[False]]],u];True]]]\n"
+                 ],
+      "section": "Expression type predicates",
+        "usage": "",
+     "funcname": "CalculusQ[u]",
+      "funlist": "$CalculusFunctions = {D, Integrate, Sum, Product, Int, Unintegrable, CannotIntegrate, Dif, Subst};"
+  },
+  {
+      "methods": [
+                   "CalculusFreeQ[u_,x_] :=\n  If[AtomQ[u],\n    True,\n  If[CalculusQ[u] && u[[2]]===x || HeldFormQ[u],\n    False,\n  Catch[Scan[Function[If[CalculusFreeQ[#,x],Null,Throw[False]]],u]; True]]]\n"
+                 ],
+      "section": "Expression type predicates",
+        "usage": "",
+     "funcname": "CalculusFreeQ[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "IntegralFreeQ[u_] :=\n  FreeQ[u,Int] && FreeQ[u,Integral] && FreeQ[u,Unintegrable] && FreeQ[u,CannotIntegrate]\n"
+                 ],
+      "section": "Expression type predicates",
+        "usage": "",
+     "funcname": "IntegralFreeQ[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "PolyQ[u_,x_Symbol,n_] :=\n  If[PolynomialQ[u,x],\n    EqQ[Exponent[u,x],n] && NeQ[Coefficient[u,x,n],0],\n  With[{v=Together[u]}, PolynomialQ[v,x] && EqQ[Exponent[v,x],n] && NeQ[Coefficient[v,x,n],0]]]\n",
+                   "PolyQ[u_,x_Symbol^v_,n_] :=\n  PolyQ[u,x^v] && EqQ[Expon[u,x^v],n] && NeQ[Coeff[u,x^v,n],0]\n",
+                   "PolyQ[u_,x_Symbol] :=\n  PolynomialQ[u,x] || PolynomialQ[Together[u],x]\n",
+                   "PolyQ[u_,x_Symbol^n_Integer] :=\n  If[PolynomialQ[u,x],\n    PolynomialQ[u,x^n],\n  With[{v=Together[u]}, PolynomialQ[v,x] && PolynomialQ[v,x^n]]] /;\nn>0\n",
+                   "PolyQ[u_,x_Symbol^v_] :=\n  If[Quiet[PolynomialQ[u,x^v]]===True,\n    FreeQ[CoefficientList[u,x^v],x],\n  With[{w=Together[u]}, Quiet[PolynomialQ[w,x^v]]===True && FreeQ[CoefficientList[w,x^v],x]]] /;\nNonsumQ[v] && FreeQ[v,x]\n",
+                   "PolyQ[u_,v_] :=\n  False\n"
+                 ],
+      "section": "Multinomial predicates",
+        "usage": "",
+     "funcname": "PolyQ[u,x,n]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "ProperPolyQ[u_,x_Symbol] :=\n  PolyQ[u,x] && NeQ[Coeff[u,x,0],0]\n"
+                 ],
+      "section": "Multinomial predicates",
+        "usage": "",
+     "funcname": "ProperPolyQ[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "BinomialQ[u_,x_Symbol] :=\n  If[ListQ[u],\n    Catch[Scan[Function[If[Not[BinomialQ[#,x]],Throw[False]]],u]; True],\n  ListQ[BinomialParts[u,x]]]\n",
+                   "BinomialQ[u_,x_Symbol,n_] :=\n  If[ListQ[u],\n    Catch[Scan[Function[If[Not[BinomialQ[#,x,n]],Throw[False]]],u]; True],\n  Function[ListQ[#] && #[[3]]===n][BinomialParts[u,x]]]\n"
+                 ],
+      "section": "Multinomial predicates",
+        "usage": "",
+     "funcname": "BinomialQ[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "TrinomialQ[u_,x_Symbol] :=\n  If[ListQ[u],\n    Catch[Scan[Function[If[Not[TrinomialQ[#,x]],Throw[False]]],u]; True],\n  ListQ[TrinomialParts[u,x]] && Not[QuadraticQ[u,x]] && Not[MatchQ[u,w_^2 /; BinomialQ[w,x]]]]\n"
+                 ],
+      "section": "Multinomial predicates",
+        "usage": "",
+     "funcname": "TrinomialQ[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "GeneralizedBinomialQ[u_,x_Symbol] :=\n  If[ListQ[u],\n    Catch[Scan[Function[If[Not[GeneralizedBinomialQ[#,x]],Throw[False]]],u]; True],\n  ListQ[GeneralizedBinomialParts[u,x]]]\n"
+                 ],
+      "section": "Multinomial predicates",
+        "usage": "",
+     "funcname": "GeneralizedBinomialQ[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "GeneralizedTrinomialQ[u_,x_Symbol] :=\n  If[ListQ[u],\n    Catch[Scan[Function[If[Not[GeneralizedTrinomialQ[#,x]],Throw[False]]],u]; True],\n  ListQ[GeneralizedTrinomialParts[u,x]]]\n"
+                 ],
+      "section": "Multinomial predicates",
+        "usage": "",
+     "funcname": "GeneralizedTrinomialQ[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "PosQ[u_] :=\n  PosAux[TogetherSimplify[u]]\n",
+                   "PosAux[u_] :=\n  If[NumberQ[u],\n    If[Head[u]===Complex,\n      If[EqQ[Re[u],0],\n        PosAux[Im[u]],\n      PosAux[Re[u]]],\n    u>0],\n  If[NumericQ[u],\n    With[{v=Simplify[Re[u]]},\n      If[NumberQ[v],\n        If[EqQ[v,0],\n          PosAux[Simplify[Im[u]]],\n        v>0],\n      With[{w=N[u]}, NumberQ[w] && PosAux[w]]]],\n  With[{v=Refine[u>0]}, If[v===True || v===False,\n    v,\n  If[PowerQ[u],\n    If[IntegerQ[u[[2]]],\n      EvenQ[u[[2]]] || PosAux[u[[1]]],\n    True],\n  If[ProductQ[u],\n    If[PosAux[First[u]],\n      PosAux[Rest[u]],\n    Not[PosAux[Rest[u]]]],\n  If[SumQ[u],\n    PosAux[First[u]],\n  True]]]]]]]\n"
+                 ],
+      "section": "Expression form predicates",
+        "usage": "",
+     "funcname": "PosQ[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "NegQ[u_] :=\n  Not[PosQ[u]] && NeQ[u,0]\n"
+                 ],
+      "section": "Expression form predicates",
+        "usage": "",
+     "funcname": "NegQ[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "NiceSqrtQ[u_] :=\n  Not[LtQ[u,0]] && NiceSqrtAuxQ[u]\n",
+                   "NiceSqrtAuxQ[u_] :=\n  If[RationalQ[u],\n    u>0,\n  If[PowerQ[u],\n    EvenQ[u[[2]]],\n  If[ProductQ[u],\n    NiceSqrtAuxQ[First[u]] && NiceSqrtAuxQ[Rest[u]],\n  If[SumQ[u],\n    Function[NonsumQ[#] && NiceSqrtAuxQ[#]] [Simplify[u]],\n  False]]]]\n"
+                 ],
+      "section": "Expression form predicates",
+        "usage": "",
+     "funcname": "NiceSqrtQ[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "PerfectSquareQ[u_] :=\n  If[RationalQ[u],\n    u>0 && RationalQ[Sqrt[u]],\n  If[PowerQ[u],\n    EvenQ[u[[2]]],\n  If[ProductQ[u],\n    PerfectSquareQ[First[u]] && PerfectSquareQ[Rest[u]],\n  If[SumQ[u],\n    Function[NonsumQ[#] && PerfectSquareQ[#]] [Simplify[u]],\n  False]]]]\n"
+                 ],
+      "section": "Expression form predicates",
+        "usage": "",
+     "funcname": "PerfectSquareQ[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "SimplerQ[u_,v_] :=\n  If[IntegerQ[u],\n    If[IntegerQ[v],\n      If[u==v,\n        False,\n      If[u==-v,\n        v<0,\n      Abs[u]<Abs[v]]],\n    True],\n  If[IntegerQ[v],\n    False,\n  If[FractionQ[u],\n    If[FractionQ[v],\n      If[Denominator[u]==Denominator[v],\n        SimplerQ[Numerator[u],Numerator[v]],\n      Denominator[u]<Denominator[v]],\n    True],\n  If[FractionQ[v],\n    False,\n  If[(Re[u]===0 || Re[u]===0.0) && (Re[v]===0 || Re[v]===0.0),\n    SimplerQ[Im[u],Im[v]],\n  If[ComplexNumberQ[u],\n    If[ComplexNumberQ[v],\n      If[Re[u]==Re[v],\n        SimplerQ[Im[u],Im[v]],\n      SimplerQ[Re[u],Re[v]]],\n    False],\n  If[NumberQ[u],\n    If[NumberQ[v],\n      OrderedQ[{u,v}],\n    True],\n  If[NumberQ[v],\n    False,\n  If[AtomQ[u],\n    If[AtomQ[v],\n      OrderedQ[{u,v}],\n    True],\n  If[AtomQ[v],\n    False,\n  If[Head[u]===Head[v],\n    If[Length[u]==Length[v],\n      If[LeafCount[u]==LeafCount[v],\n        Catch[Do[If[u[[ii]]===v[[ii]],Null,Throw[SimplerQ[u[[ii]],v[[ii]]]]],{ii,Length[u]}]; False],\n      LeafCount[u]<LeafCount[v]],\n    Length[u]<Length[v]],\n  If[LeafCount[u]==LeafCount[v],\n    Not[OrderedQ[{v,u}]],\n  LeafCount[u]<LeafCount[v]]]]]]]]]]]]]\n"
+                 ],
+      "section": "Simpler functions",
+        "usage": "",
+     "funcname": "SimplerQ[u,v]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "SimplerSqrtQ[u_,v_] :=\n  If[LtQ[v,0] && Not[LtQ[u,0]],\n    True,\n  If[LtQ[u,0] && Not[LtQ[v,0]],\n    False,\n  With[{sqrtu=Rt[u,2],sqrtv=Rt[v,2]},\n  If[IntegerQ[sqrtu],\n    If[IntegerQ[sqrtv],\n      sqrtu<sqrtv,\n    True],\n  If[IntegerQ[sqrtv],\n    False,\n  If[RationalQ[sqrtu],\n    If[RationalQ[sqrtv],\n      sqrtu<sqrtv,\n    True],\n  If[RationalQ[sqrtv],\n    False,\n  If[PosQ[u],\n    If[PosQ[v],\n      LeafCount[sqrtu]<LeafCount[sqrtv],\n    True],\n  If[PosQ[v],\n    False,\n  If[LeafCount[sqrtu]<LeafCount[sqrtv],\n    True,\n  If[LeafCount[sqrtv]<LeafCount[sqrtu],\n    False,\n  Not[OrderedQ[{v,u}]]]]]]]]]]]]]\n"
+                 ],
+      "section": "Simpler functions",
+        "usage": "",
+     "funcname": "SimplerSqrtQ[u,v]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "SumSimplerQ[u_,v_] :=\n  If[RationalQ[u,v],\n    If[v==0,\n      False,\n    If[v>0,\n      u<-1,\n    u>=-v]],\n  SumSimplerAuxQ[Expand[u],Expand[v]]]\n",
+                   "SumSimplerAuxQ[u_,v_] :=\n  (RationalQ[First[v]] || SumSimplerAuxQ[u,First[v]]) && \n  (RationalQ[Rest[v]] || SumSimplerAuxQ[u,Rest[v]]) /;\nSumQ[v]\n",
+                   "SumSimplerAuxQ[u_,v_] :=\n  SumSimplerAuxQ[First[u],v] || SumSimplerAuxQ[Rest[u],v] /;\nSumQ[u]\n",
+                   "SumSimplerAuxQ[u_,v_] :=\n  v=!=0 && \n  NonnumericFactors[u]===NonnumericFactors[v] && \n  (NumericFactor[u]/NumericFactor[v]<-1/2 || NumericFactor[u]/NumericFactor[v]==-1/2 && NumericFactor[u]<0)  \n"
+                 ],
+      "section": "Simpler functions",
+        "usage": "",
+     "funcname": "SumSimplerQ[u,v]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "SimplerIntegrandQ[u_,v_,x_Symbol] :=\n  Module[{lst=CancelCommonFactors[u,v],u1,v1},\n  u1=lst[[1]];\n  v1=lst[[2]];\n(*If[Head[u1]===Head[v1] && Length[u1]==Length[v1]==1,\n    SimplerIntegrandQ[u1[[1]],v1[[1]],x], *)\n  If[LeafCount[u1]<3/4*LeafCount[v1],\n    True,\n  If[RationalFunctionQ[u1,x],\n    If[RationalFunctionQ[v1,x],\n      Apply[Plus,RationalFunctionExponents[u1,x]]<Apply[Plus,RationalFunctionExponents[v1,x]],\n    True],\n  False]]]\n",
+                   "CancelCommonFactors[u_,v_] :=\n  If[ProductQ[u],\n    If[ProductQ[v],\n      If[MemberQ[v,First[u]],\n        CancelCommonFactors[Rest[u],DeleteCases[v,First[u],1,1]],\n      Function[{First[u]*#[[1]],#[[2]]}][CancelCommonFactors[Rest[u],v]]],\n    If[MemberQ[u,v],\n      {DeleteCases[u,v,1,1],1},\n    {u,v}]],\n  If[ProductQ[v],\n    If[MemberQ[v,u],\n      {1,DeleteCases[v,u,1,1]},\n    {u,v}],\n  {u,v}]]\n"
+                 ],
+      "section": "Simpler functions",
+        "usage": "",
+     "funcname": "SimplerIntegrandQ[u,v,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "BinomialDegree[u_,x_Symbol] :=\n  BinomialParts[u,x][[3]]\n",
+                   "BinomialParts[u_,x_Symbol] :=\n  If[PolynomialQ[u,x],\n    If[Exponent[u,x]>0,\n      With[{lst=Exponent[u,x,List]},\n        If[Length[lst]==1,\n          {0, Coefficient[u,x,Exponent[u,x]], Exponent[u,x]},\n        If[Length[lst]==2 && lst[[1]]==0,\n          {Coefficient[u,x,0], Coefficient[u,x,Exponent[u,x]], Exponent[u,x]},\n        False]]],\n    False],\n  If[PowerQ[u],\n    If[u[[1]]===x && FreeQ[u[[2]],x],\n      {0,1,u[[2]]},\n    False],\n  If[ProductQ[u],\n    If[FreeQ[First[u],x],\n      With[{lst2=BinomialParts[Rest[u],x]},\n      If[AtomQ[lst2],\n        False,\n      {First[u]*lst2[[1]],First[u]*lst2[[2]],lst2[[3]]}]],\n    If[FreeQ[Rest[u],x],\n      With[{lst1=BinomialParts[First[u],x]},\n      If[AtomQ[lst1],\n        False,\n      {Rest[u]*lst1[[1]],Rest[u]*lst1[[2]],lst1[[3]]}]],\n    With[{lst1=BinomialParts[First[u],x]},\n    If[AtomQ[lst1],\n      False,\n    With[{lst2=BinomialParts[Rest[u],x]},\n    If[AtomQ[lst2],\n      False,\n    With[{a=lst1[[1]],b=lst1[[2]],m=lst1[[3]], c=lst2[[1]],d=lst2[[2]],n=lst2[[3]]},\n    If[EqQ[a,0],\n      If[EqQ[c,0],\n        {0,b*d,m+n},\n      If[EqQ[m+n,0],\n        {b*d,b*c,m},\n      False]],\n    If[EqQ[c,0],\n      If[EqQ[m+n,0],\n        {b*d,a*d,n},\n      False],\n    If[EqQ[m,n] && EqQ[a*d+b*c,0],\n      {a*c,b*d,2*m},\n    False]]]]]]]]]],\n  If[SumQ[u],\n    If[FreeQ[First[u],x],\n     With[{lst2=BinomialParts[Rest[u],x]},\n      If[AtomQ[lst2],\n        False,\n      {First[u]+lst2[[1]],lst2[[2]],lst2[[3]]}]],\n    If[FreeQ[Rest[u],x],\n      With[{lst1=BinomialParts[First[u],x]},\n      If[AtomQ[lst1],\n        False,\n      {Rest[u]+lst1[[1]],lst1[[2]],lst1[[3]]}]],\n    With[{lst1=BinomialParts[First[u],x]},\n    If[AtomQ[lst1],\n      False,\n    With[{lst2=BinomialParts[Rest[u],x]},\n    If[AtomQ[lst2],\n      False,\n    If[EqQ[lst1[[3]],lst2[[3]]],\n      {lst1[[1]]+lst2[[1]],lst1[[2]]+lst2[[2]],lst1[[3]]},\n    False]]]]]]],\n  False]]]]\n"
+                 ],
+      "section": "Parts functions",
+        "usage": "",
+     "funcname": "BinomialParts[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "TrinomialDegree[u_,x_Symbol] :=\n  TrinomialParts[u,x][[4]]\n",
+                   "TrinomialParts[u_,x_Symbol] :=\n  If[PolynomialQ[u,x],\n    With[{lst=CoefficientList[u,x]},\n    If[Length[lst]<3 || EvenQ[Length[lst]] || EqQ[lst[[(Length[lst]+1)/2]],0],\n      False,\n    Catch[\n      Scan[Function[If[EqQ[#,0],Null,Throw[False]]],Drop[Drop[Drop[lst,{(Length[lst]+1)/2}],1],-1]];\n      {First[lst],lst[[(Length[lst]+1)/2]],Last[lst],(Length[lst]-1)/2}]]],\n  If[PowerQ[u],\n    If[EqQ[u[[2]],2],\n      With[{lst=BinomialParts[u[[1]],x]},\n      If[AtomQ[lst] || EqQ[lst[[1]],0],\n        False,\n      {lst[[1]]^2,2*lst[[1]]*lst[[2]],lst[[2]]^2,lst[[3]]}]],\n    False],\n  If[ProductQ[u],\n    If[FreeQ[First[u],x],\n      With[{lst2=TrinomialParts[Rest[u],x]},\n      If[AtomQ[lst2],\n        False,\n      {First[u]*lst2[[1]],First[u]*lst2[[2]],First[u]*lst2[[3]],lst2[[4]]}]],\n    If[FreeQ[Rest[u],x],\n      With[{lst1=TrinomialParts[First[u],x]},\n      If[AtomQ[lst1],\n        False,\n      {Rest[u]*lst1[[1]],Rest[u]*lst1[[2]],Rest[u]*lst1[[3]],lst1[[4]]}]],\n    With[{lst1=BinomialParts[First[u],x]},\n    If[AtomQ[lst1],\n      False,\n    With[{lst2=BinomialParts[Rest[u],x]},\n    If[AtomQ[lst2],\n      False,\n    With[{a=lst1[[1]],b=lst1[[2]],m=lst1[[3]], c=lst2[[1]],d=lst2[[2]],n=lst2[[3]]},\n    If[EqQ[m,n] && NeQ[a*d+b*c,0],\n      {a*c,a*d+b*c,b*d,m},\n    False]]]]]]]],\n  If[SumQ[u],\n    If[FreeQ[First[u],x],\n      With[{lst2=TrinomialParts[Rest[u],x]},\n      If[AtomQ[lst2],\n        False,\n      {First[u]+lst2[[1]],lst2[[2]],lst2[[3]],lst2[[4]]}]],\n    If[FreeQ[Rest[u],x],\n      With[{lst1=TrinomialParts[First[u],x]},\n      If[AtomQ[lst1],\n        False,\n      {Rest[u]+lst1[[1]],lst1[[2]],lst1[[3]],lst1[[4]]}]],\n    With[{lst1=TrinomialParts[First[u],x]},\n    If[AtomQ[lst1],\n      With[{lst3=BinomialParts[First[u],x]},\n      If[AtomQ[lst3],\n        False,\n      With[{lst2=TrinomialParts[Rest[u],x]},\n      If[AtomQ[lst2],\n        With[{lst4=BinomialParts[Rest[u],x]},\n        If[AtomQ[lst4],\n          False,\n        If[EqQ[lst3[[3]],2*lst4[[3]]],\n          {lst3[[1]]+lst4[[1]],lst4[[2]],lst3[[2]],lst4[[3]]},\n        If[EqQ[lst4[[3]],2*lst3[[3]]],\n          {lst3[[1]]+lst4[[1]],lst3[[2]],lst4[[2]],lst3[[3]]},\n        False]]]],\n      If[EqQ[lst3[[3]],lst2[[4]]] && NeQ[lst3[[2]]+lst2[[2]],0],\n        {lst3[[1]]+lst2[[1]],lst3[[2]]+lst2[[2]],lst2[[3]],lst2[[4]]},\n      If[EqQ[lst3[[3]],2*lst2[[4]]] && NeQ[lst3[[2]]+lst2[[3]],0],\n        {lst3[[1]]+lst2[[1]],lst2[[2]],lst3[[2]]+lst2[[3]],lst2[[4]]},\n      False]]]]]],\n    With[{lst2=TrinomialParts[Rest[u],x]},\n    If[AtomQ[lst2],\n      With[{lst4=BinomialParts[Rest[u],x]},\n      If[AtomQ[lst4],\n        False,\n      If[EqQ[lst4[[3]],lst1[[4]]] && NeQ[lst1[[2]]+lst4[[2]],0],\n        {lst1[[1]]+lst4[[1]],lst1[[2]]+lst4[[2]],lst1[[3]],lst1[[4]]},\n      If[EqQ[lst4[[3]],2*lst1[[4]]] && NeQ[lst1[[3]]+lst4[[2]],0],\n        {lst1[[1]]+lst4[[1]],lst1[[2]],lst1[[3]]+lst4[[2]],lst1[[4]]},\n      False]]]],\n    If[EqQ[lst1[[4]],lst2[[4]]] && NeQ[lst1[[2]]+lst2[[2]],0] && NeQ[lst1[[3]]+lst2[[3]],0],\n      {lst1[[1]]+lst2[[1]],lst1[[2]]+lst2[[2]],lst1[[3]]+lst2[[3]],lst1[[4]]},\n    False]]]]]]],\n  False]]]]\n"
+                 ],
+      "section": "Parts functions",
+        "usage": "",
+     "funcname": "TrinomialParts[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "GeneralizedBinomialDegree[u_,x_Symbol] :=\n  Function[#[[3]]-#[[4]]][GeneralizedBinomialParts[u,x]]\n",
+                   "GeneralizedBinomialParts[a_*u_,x_Symbol] :=\n  With[{lst=GeneralizedBinomialParts[u,x]},\n  {a*lst[[1]], a*lst[[2]], lst[[3]], lst[[4]]} /;\n ListQ[lst]] /;\nFreeQ[a,x]\n",
+                   "GeneralizedBinomialParts[u_,x_Symbol] :=\n  False\n"
+                 ],
+      "section": "Parts functions",
+        "usage": "",
+     "funcname": "GeneralizedBinomialParts[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "GeneralizedTrinomialDegree[u_,x_Symbol] :=\n  Function[#[[4]]-#[[5]]][GeneralizedTrinomialParts[u,x]]\n",
+                   "GeneralizedTrinomialParts[a_*u_,x_Symbol] :=\n  With[{lst=GeneralizedTrinomialParts[u,x]},\n  {a*lst[[1]], a*lst[[2]], a*lst[[3]], lst[[4]], lst[[5]]} /;\n ListQ[lst]] /;\nFreeQ[a,x]\n",
+                   "GeneralizedTrinomialParts[u_,x_Symbol] :=\n  With[{lst=Expon[u,x,List]},\n  If[Length[lst]==3 && NeQ[lst[[0]],0] && EqQ[lst[[3]],2*lst[[2]]-lst[[1]]],\n    {Coeff[u,x,lst[[1]]],Coeff[u,x,lst[[2]]],Coeff[u,x,lst[[3]]],lst[[2]],lst[[1]]},\n  False]] /;\nPolyQ[u,x]\n",
+                   "GeneralizedTrinomialParts[u_,x_Symbol] :=\n  False\n"
+                 ],
+      "section": "Parts functions",
+        "usage": "",
+     "funcname": "GeneralizedTrinomialParts[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "IntPart[m_*u_,n_:1] :=\n  IntPart[u,m*n] /;\nRationalQ[m]\n",
+                   "IntPart[u_,n_:1] :=\n  If[RationalQ[u],\n    IntegerPart[n*u],\n  If[SumQ[u],\n    Map[Function[IntPart[#,n]],u],\n  0]]\n"
+                 ],
+      "section": "Selection functions",
+        "usage": "",
+     "funcname": "IntPart[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "FracPart[m_*u_,n_:1] :=\n  FracPart[u,m*n] /;\nRationalQ[m]\n",
+                   "FracPart[u_,n_:1] :=\n  If[RationalQ[u],\n    FractionalPart[n*u],\n  If[SumQ[u],\n    Map[Function[FracPart[#,n]],u],\n  n*u]]\n"
+                 ],
+      "section": "Selection functions",
+        "usage": "",
+     "funcname": "FracPart[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "RemoveContent[u_,x_Symbol] :=\n  With[{v=NonfreeFactors[u,x]},\n  With[{w=Together[v]},\n  If[EqQ[FreeFactors[w,x],1],\n    RemoveContentAux[v,x],\n  RemoveContentAux[NonfreeFactors[w,x],x]]]]\n",
+                   "RemoveContentAux[u_,x_Symbol] :=\n  If[SumQ[u] && NegQ[First[u]],\n    -u,\n  u]\n"
+                 ],
+      "section": "Selection functions",
+        "usage": "",
+     "funcname": "RemoveContent[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "FreeFactors[u_,x_] :=\n  If[ProductQ[u],\n    Map[Function[If[FreeQ[#,x],#,1]],u],\n  If[FreeQ[u,x],\n    u,\n  1]]\n"
+                 ],
+      "section": "Selection functions",
+        "usage": "",
+     "funcname": "FreeFactors[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "NonfreeFactors[u_,x_] :=\n  If[ProductQ[u],\n    Map[Function[If[FreeQ[#,x],1,#]],u],\n  If[FreeQ[u,x],\n    1,\n  u]]\n"
+                 ],
+      "section": "Selection functions",
+        "usage": "",
+     "funcname": "NonfreeFactors[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "FreeTerms[u_,x_] :=\n  If[SumQ[u],\n    Map[Function[If[FreeQ[#,x],#,0]],u],\n  If[FreeQ[u,x],\n    u,\n  0]]\n"
+                 ],
+      "section": "Selection functions",
+        "usage": "",
+     "funcname": "FreeTerms[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "NonfreeTerms[u_,x_] :=\n  If[SumQ[u],\n    Map[Function[If[FreeQ[#,x],0,#]],u],\n  If[FreeQ[u,x],\n    0,\n  u]]\n"
+                 ],
+      "section": "Selection functions",
+        "usage": "",
+     "funcname": "NonfreeTerms[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "LeadTerm[u_] :=\n  If[SumQ[u],\n    First[u],\n  u]\n"
+                 ],
+      "section": "Polynomial functions",
+        "usage": "",
+     "funcname": "LeadTerm[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "RemainingTerms[u_] :=\n  If[SumQ[u],\n    Rest[u],\n  0]\n"
+                 ],
+      "section": "Polynomial functions",
+        "usage": "",
+     "funcname": "RemainingTerms[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "LeadFactor[u_] :=\n  If[ProductQ[u],\n    LeadFactor[First[u]],\n  If[ComplexNumberQ[u] && Re[u]===0,\n    If[Im[u]===1,\n      u,\n    LeadFactor[Im[u]]],\n  u]]\n"
+                 ],
+      "section": "Polynomial functions",
+        "usage": "",
+     "funcname": "LeadFactor[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "RemainingFactors[u_] :=\n  If[ProductQ[u],\n    RemainingFactors[First[u]]*Rest[u],\n  If[ComplexNumberQ[u] && Re[u]===0,\n    If[Im[u]===1,\n      1,\n    I*RemainingFactors[Im[u]]],\n  1]]\n"
+                 ],
+      "section": "Polynomial functions",
+        "usage": "",
+     "funcname": "RemainingFactors[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "LeadBase[u_] :=\n  With[{v=LeadFactor[u]},\n  If[PowerQ[v],\n    v[[1]],\n  v]]\n"
+                 ],
+      "section": "Polynomial functions",
+        "usage": "",
+     "funcname": "LeadBase[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "LeadDegree[u_] :=\n  With[{v=LeadFactor[u]},\n  If[PowerQ[v],\n    v[[2]],\n  1]]\n"
+                 ],
+      "section": "Polynomial functions",
+        "usage": "",
+     "funcname": "LeadDegree[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "Numer[m_Integer^n_Rational] :=\n  1 /;\nn<0\n",
+                   "Numer[u_*v_] :=\n  Numer[u]*Numer[v]\n",
+                   "Numer[u_] := Numerator[u]\n"
+                 ],
+      "section": "Polynomial functions",
+        "usage": "",
+     "funcname": "Numer[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "Denom[m_Integer^n_Rational] :=\n  m^-n /;\nn<0\n",
+                   "Denom[u_*v_] :=\n  Denom[u]*Denom[v]\n",
+                   "Denom[u_] := Denominator[u]\n"
+                 ],
+      "section": "Polynomial functions",
+        "usage": "",
+     "funcname": "Denom[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "ExpandToSum[u_,v_,x_Symbol] :=\n  Module[{w=ExpandToSum[v,x],r},\n  r=NonfreeTerms[w,x];\n  If[SumQ[r],\n    u*FreeTerms[w,x]+Map[Function[MergeMonomials[u*#,x]],r],\n  u*FreeTerms[w,x]+MergeMonomials[u*r,x]]]\n",
+                   "ExpandToSum[u_,x_Symbol] :=\n  If[PolyQ[u,x],\n    Simp[Apply[Plus,Map[Function[Coeff[u,x,#]*x^#], Expon[u,x,List]]],x],\n  If[BinomialQ[u,x],\n    Function[#[[1]] + #[[2]]*x^#[[3]]][BinomialParts[u,x]],\n  If[TrinomialQ[u,x],\n    Function[#[[1]] + #[[2]]*x^#[[4]] + #[[3]]*x^(2*#[[4]])][TrinomialParts[u,x]],\n  If[GeneralizedBinomialQ[u,x],\n    Function[#[[1]]*x^#[[4]] + #[[2]]*x^#[[3]]][GeneralizedBinomialParts[u,x]],\n  If[GeneralizedTrinomialQ[u,x],\n    Function[#[[1]]*x^#[[5]] + #[[2]]*x^#[[4]] + #[[3]]*x^(2*#[[4]]-#[[5]])][GeneralizedTrinomialParts[u,x]],\n  Print[\"Warning: Unrecognized expression for expansion \",u];\n  Expand[u,x]]]]]]\n"
+                 ],
+      "section": "Expansion functions",
+        "usage": "",
+     "funcname": "ExpandToSum[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "ExpandTrig[u_,x_Symbol] :=\n  ActivateTrig[ExpandIntegrand[u,x]]\n",
+                   "ExpandTrig[u_,v_,x_Symbol] :=\n  With[{w=ExpandTrig[v,x],z=ActivateTrig[u]},\n  If[SumQ[w],\n    Map[Function[z*#],w],\n  z*w]]\n"
+                 ],
+      "section": "Expansion functions",
+        "usage": "",
+     "funcname": "ExpandTrig[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "ExpandIntegrand[u_,v_,x_Symbol] :=\n  Module[{w=ExpandIntegrand[v,x],r},\n  r=NonfreeTerms[w,x];\n  If[SumQ[r],\n    u*FreeTerms[w,x]+Map[Function[MergeMonomials[u*#,x]],r],\n  u*FreeTerms[w,x]+MergeMonomials[u*r,x]]]\n"
+                 ],
+      "section": "Expansion functions",
+        "usage": "",
+     "funcname": "ExpandIntegrand[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "ExpandExpression[u_,x_Symbol] :=\n  Module[{v,w},\n  v=If[AlgebraicFunctionQ[u,x] && Not[RationalFunctionQ[u,x]], ExpandAlgebraicFunction[u,x], 0];\n  If[SumQ[v],\n    ExpandCleanup[v,x],\n  v=SmartApart[u,x];\n  If[SumQ[v],\n    ExpandCleanup[v,x],\n  v=SmartApart[RationalFunctionFactors[u,x],x,x];\n  If[SumQ[v],\n    w=NonrationalFunctionFactors[u,x];\n    ExpandCleanup[Map[Function[#*w],v],x],\n  v=Expand[u,x];\n  If[SumQ[v],\n    ExpandCleanup[v,x],\n  v=Expand[u];\n  If[SumQ[v],\n    ExpandCleanup[v,x],\n  SimplifyTerm[u,x]]]]]]]\n",
+                   "ExpandCleanup[u_,x_Symbol] :=\n  Module[{v=CollectReciprocals[u,x]},\n  If[SumQ[v],\n    v=Map[Function[SimplifyTerm[#,x]],v];\n    If[SumQ[v],\n      UnifySum[v,x],\n    v],\n  v]]\n"
+                 ],
+      "section": "Expansion functions",
+        "usage": "",
+     "funcname": "ExpandExpression[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "SmartApart[u_,x_Symbol] :=\n  With[{alst=MakeAssocList[u,x]},\n  With[{tmp=KernelSubst[Apart[GensymSubst[u,x,alst]],x,alst]},\n  If[tmp===Indeterminate, u, tmp]]]\n",
+                   "SmartApart[u_,v_,x_Symbol] :=\n  With[{alst=MakeAssocList[u,x]},\n  With[{tmp=KernelSubst[Apart[GensymSubst[u,x,alst],v],x,alst]},\n  If[tmp===Indeterminate, u, tmp]]]\n",
+                   "GensymSubst[u_,x_Symbol,alst_List] :=\n  If[AtomQ[u],\n    u,\n  If[IntegerPowerQ[u],\n    GensymSubst[u[[1]],x,alst]^u[[2]],\n  If[ProductQ[u] || SumQ[u],\n    Map[Function[GensymSubst[#,x,alst]],u],\n  If[FreeQ[u,x],\n    With[{tmp=Select[alst,Function[#[[2]]===u],1]},\n    If[tmp==={},\n      u,\n    tmp[[1,1]]]],\n  u]]]]\n",
+                   "KernelSubst[u_,x_Symbol,alst_List] :=\n  If[AtomQ[u],\n    With[{tmp=Select[alst,Function[#[[1]]===u],1]},\n    If[tmp==={},\n      u,\n    tmp[[1,2]]]],\n  If[IntegerPowerQ[u],\n    With[{tmp=KernelSubst[u[[1]],x,alst]},\n    If[u[[2]]<0 && EqQ[tmp,0],\n      Indeterminate,\n    tmp^u[[2]]]],\n  If[ProductQ[u] || SumQ[u],\n    Map[Function[KernelSubst[#,x,alst]],u],\n  u]]]\n"
+                 ],
+      "section": "Expansion functions",
+        "usage": "",
+     "funcname": "SmartApart[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "UnifySum[u_,x_Symbol] :=\n  If[SumQ[u],\n    Apply[Plus,UnifyTerms[Apply[List,u],x]],  \n  SimplifyTerm[u,x]]\n",
+                   "UnifyTerms[lst_,x_] :=\n  If[lst==={},\n    lst,\n  UnifyTerm[First[lst],UnifyTerms[Rest[lst],x],x]]\n",
+                   "UnifyTerm[term_,lst_,x_] :=\n  If[lst==={},\n    {term},\n  With[{tmp=Simplify[First[lst]/term]},\n  If[FreeQ[tmp,x],\n    Prepend[Rest[lst],(1+tmp)*term],\n  Prepend[UnifyTerm[term,Rest[lst],x],First[lst]]]]]\n"
+                 ],
+      "section": "ExpandAlgebraicFunction",
+        "usage": "",
+     "funcname": "UnifySum[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "ExpandLinearProduct[v_,u_,a_,b_,x_Symbol] :=\n  Module[{lst},\n  lst=CoefficientList[ReplaceAll[u,x->(x-a)/b],x];\n  lst=Map[Function[SimplifyTerm[#,x]],lst];\n  Module[{ii},\n  Sum[v*lst[[ii]]*(a+b*x)^(ii-1),{ii,1,Length[lst]}]]] /;\nFreeQ[{a,b},x] && PolynomialQ[u,x]\n"
+                 ],
+      "section": "ExpandAlgebraicFunction",
+        "usage": "",
+     "funcname": "ExpandLinearProduct[v,u,a,b,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "ExpandTrigExpand[u_,F_,v_,m_,n_,x_Symbol] :=\n  With[{w=ReplaceAll[Expand[TrigExpand[F[n*x]]^m,x],x->v]},\n  If[SumQ[w],\n    Map[Function[u*#],w],\n  u*w]]\n"
+                 ],
+      "section": "ExpandAlgebraicFunction",
+        "usage": "",
+     "funcname": "ExpandTrigExpand[u,F,v,m,n,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "ExpandTrigReduce[u_,v_,x_Symbol] :=\n  With[{w=ExpandTrigReduce[v,x]},\n  If[SumQ[w],\n    Map[Function[u*#],w],\n  u*w]]\n",
+                   "ExpandTrigReduce[u_,x_Symbol] :=\n  ExpandTrigReduceAux[u,x]\n",
+                   "ExpandTrigReduceAux[u_,x_Symbol] :=\n  With[{v=Expand[TrigReduce[u]]},\n  If[SumQ[v],\n    Map[Function[NormalizeTrigReduce[#,x]],v],\n  NormalizeTrigReduce[v,x]]]\n",
+                   "NormalizeTrigReduce[u_,x_Symbol] := u\n"
+                 ],
+      "section": "ExpandAlgebraicFunction",
+        "usage": "",
+     "funcname": "ExpandTrigReduce[u,v,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "ExpandTrigToExp[u_,x_Symbol] := ExpandTrigToExp[1,u,x]\n",
+                   "ExpandTrigToExp[u_,v_,x_Symbol] :=\n  Module[{w=TrigToExp[v]},\n  w=If[SumQ[w], Map[Function[SimplifyIntegrand[u*#,x]],w], SimplifyIntegrand[u*w,x]];\n  ExpandIntegrand[FreeFactors[w,x],NonfreeFactors[w,x],x]]\n"
+                 ],
+      "section": "ExpandAlgebraicFunction",
+        "usage": "",
+     "funcname": "ExpandTrigToExp[u,v,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "Subst[u_,x_Symbol,v_] :=\n  If[PowerQ[v] && Not[IntegerQ[v[[2]]]] && \n      MatchQ[v[[1]],a_+b_.*x+c_.*x^2 /; FreeQ[{a,b,c},x] && Not[AtomQ[b]]] && \n      LeafCount[Simplify[v[[1]]]]<2/3*LeafCount[v[[1]]],\n    Subst[u,x,Simplify[v[[1]]]^v[[2]]],\n  If[SumQ[u],\n    If[BinomialQ[v,x],\n      SimplifyAntiderivative[Map[Function[SubstAux[#,x,v,True]],u],x],\n    SimplifyAntiderivative[Map[Function[SubstAux[#,x,v,False]],u],x]],\n  SimplifyAntiderivative[SubstAux[u,x,v,BinomialQ[v,x]],x]]]\n",
+                   "Subst[u_,Rule[x_Symbol,v_]] := Subst[u,x,v]\n",
+                   "Subst[u_,v_,w_] := \n  If[u===v,\n    w,\n  If[AtomQ[u],\n    u,\n  If[CalculusQ[u] && Not[FreeQ[v,u[[2]]]] || HeldFormQ[u] && Head[u]=!=Defer[AppellF1],\n    Defer[Subst][u,v,w],\n  Map[Function[Subst[#,v,w]],u]]]]\n"
+                 ],
+      "section": "Substitution functions",
+        "usage": "",
+     "funcname": "Subst[u,v,w]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "SubstAux[u_,x_,v_,flag_] :=\n  If[AtomQ[u],\n    If[u===x,\n      v,\n    u],\n  If[FreeQ[u,x],\n    u,\n  If[flag && PowerQ[u],\n    If[Not[IntegerQ[u[[2]]]] && LinearQ[u[[1]],x],\n      Simplify[SubstAux[u[[1]],x,v,flag]]^SubstAux[u[[2]],x,v,flag],\n    SubstAux[u[[1]],x,v,flag]^SubstAux[u[[2]],x,v,flag]],\n  If[Head[u]===Defer[Subst],\n    If[u[[2]]===x || FreeQ[u[[1]],x],\n      SubstAux[u[[1]],u[[2]],SubstAux[u[[3]],x,v,flag],flag],\n    Defer[Subst][u,x,v]],\n  If[Head[u]===Defer[Dist],\n    Defer[Dist][SubstAux[u[[1]],x,v,flag],SubstAux[u[[2]],x,v,flag],u[[3]]],\n  If[SimplifyFlag && MemberQ[{Unintegrable,CannotIntegrate},Head[u]] && u[[2]]===x,\n    With[{w=Simplify[D[v,x]]}, FreeFactors[w,x]*Head[u][Subst[u[[1]],x,v]*NonfreeFactors[w,x],x]],\n  If[CalculusQ[u] && Not[FreeQ[x,u[[2]]]] || HeldFormQ[u] && Head[u]=!=Defer[AppellF1],\n    Defer[Subst][u,x,v],\n  If[flag && Length[u]==1 && LinearQ[u[[1]],x],\n    Head[u][Simplify[SubstAux[u[[1]],x,v,flag]]],\n  If[flag && Head[u]===PolyLog && Length[u]==2 && LinearQ[u[[2]],x],\n    PolyLog[SubstAux[u[[1]],x,v,flag],Simplify[SubstAux[u[[2]],x,v,flag]]],\n  With[{w=Map[Function[SubstAux[#,x,v,flag]],u]},\n  If[PolyQ[w,x],\n    With[{z=If[LinearQ[v,x] || MonomialQ[v,x],ExpandToSum[w,x],Simplify[w]]},\n(*  Print[{u,v,w,z}]; *)\n    If[LeafCount[z]<=If[LinearQ[u,x],3/4,9/10]*LeafCount[w],\n      If[EqQ[NumericFactor[z]^2,1],\n        z,\n      NumericFactor[z]*NonnumericFactors[z]],\n    If[EqQ[NumericFactor[w]^2,1],\n      w,\n    NumericFactor[w]*NonnumericFactors[w]]]],\n  With[{ulst=BinomialParts[u,x]},\n  If[Not[FalseQ[ulst]] && IGtQ[ulst[[3]],0] && NeQ[ulst[[1]],0] && (NeQ[ulst[[3]],1] || AlgebraicFunctionQ[v,x]),\n    With[{z=Simplify[w]},\n    If[LeafCount[z]<9/10*LeafCount[w],\n      z,\n    w]],\n  w]]]]]]]]]]]]]\n"
+                 ],
+      "section": "Substitution functions",
+        "usage": "",
+     "funcname": "SubstAux[u,x,v]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "SimplifyAntiderivative[c_*u_,x_Symbol] :=\n  With[{v=SimplifyAntiderivative[u,x]},\n  If[SumQ[v] && NonsumQ[u],\n    Map[Function[c*#],v],\n  c*v]] /;\nFreeQ[c,x]\n",
+                   "SimplifyAntiderivative[Log[c_*u_],x_Symbol] :=\n  SimplifyAntiderivative[Log[u],x] /;\nFreeQ[c,x]\n",
+                   "SimplifyAntiderivative[Log[u_^n_],x_Symbol] :=\n  n*SimplifyAntiderivative[Log[u],x] /;\nFreeQ[n,x]\n",
+                   "SimplifyAntiderivative[F_[G_[u_]],x_Symbol] :=\n  -SimplifyAntiderivative[F[1/G[u]],x] /;\nMemberQ[{Log,ArcTan,ArcCot},F] && MemberQ[{Cot,Sec,Csc,Coth,Sech,Csch},G]\n",
+                   "SimplifyAntiderivative[F_[G_[u_]],x_Symbol] :=\n  SimplifyAntiderivative[F[1/G[u]],x] /;\nMemberQ[{ArcTanh,ArcCoth},F] && MemberQ[{Cot,Sec,Csc,Coth,Sech,Csch},G]\n",
+                   "SimplifyAntiderivative[Log[F_[u_]],x_Symbol] :=\n  -SimplifyAntiderivative[Log[1/F[u]],x] /;\nMemberQ[{Cot,Sec,Csc,Coth,Sech,Csch},F]\n",
+                   "SimplifyAntiderivative[Log[f_^u_],x_Symbol] :=\n  Log[f]*SimplifyAntiderivative[u,x] /;\nFreeQ[f,x]\n",
+                   "SimplifyAntiderivative[ArcTanh[Tanh[u_]],x_Symbol] :=\n  SimplifyAntiderivative[u,x]\n",
+                   "SimplifyAntiderivative[ArcCoth[Tanh[u_]],x_Symbol] :=\n  SimplifyAntiderivative[u,x]\n",
+                   "SimplifyAntiderivative[ArcCoth[Coth[u_]],x_Symbol] :=\n  SimplifyAntiderivative[u,x]\n",
+                   "SimplifyAntiderivative[ArcTanh[Coth[u_]],x_Symbol] :=\n  SimplifyAntiderivative[u,x]\n",
+                   "SimplifyAntiderivative[u_,x_Symbol] :=\n  If[FreeQ[u,x],\n    0,\n  If[LogQ[u],\n    Log[RemoveContent[u[[1]],x]],\n  If[SumQ[u],\n    SimplifyAntiderivativeSum[Map[Function[SimplifyAntiderivative[#,x]],u],x],\n  u]]]\n"
+                 ],
+      "section": "Substitution functions",
+        "usage": "",
+     "funcname": "SimplifyAntiderivative[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "ActivateTrig[u_] :=\n  ReplaceAll[u,{sin->Sin,cos->Cos,tan->Tan,cot->Cot,sec->Sec,csc->Csc}]\n"
+                 ],
+      "section": "InertTrigQ",
+        "usage": "",
+     "funcname": "ActivateTrig[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "DeactivateTrig[u_,x_] :=\n  UnifyInertTrigFunction[FixInertTrigFunction[DeactivateTrigAux[u,x],x],x]\n",
+                   "DeactivateTrigAux[u_,x_] :=\n  If[AtomQ[u],\n    u,\n  If[TrigQ[u] && LinearQ[u[[1]],x],\n    With[{v=ExpandToSum[u[[1]],x]},\n    Switch[Head[u],\n\t  Sin, ReduceInertTrig[sin,v],\n\t  Cos, ReduceInertTrig[cos,v],\n\t  Tan, ReduceInertTrig[tan,v],\n\t  Cot, ReduceInertTrig[cot,v],\n\t  Sec, ReduceInertTrig[sec,v],\n\t  Csc, ReduceInertTrig[csc,v]]],\n  If[HyperbolicQ[u] && LinearQ[u[[1]],x],\n    With[{v=ExpandToSum[I*u[[1]],x]},\n    Switch[Head[u],\n\t  Sinh, -I*ReduceInertTrig[sin,v],\n\t  Cosh, ReduceInertTrig[cos,v],\n\t  Tanh, -I*ReduceInertTrig[tan,v],\n\t  Coth, I*ReduceInertTrig[cot,v],\n\t  Sech, ReduceInertTrig[sec,v],\n\t  Csch, I*ReduceInertTrig[csc,v]]],\n  Map[Function[DeactivateTrigAux[#,x]],u]]]]\n"
+                 ],
+      "section": "InertTrigQ",
+        "usage": "",
+     "funcname": "DeactivateTrig[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "FixInertTrigFunction[a_*u_,x_] :=\n  a*FixInertTrigFunction[u,x] /;\nFreeQ[a,x]\n",
+                   "FixInertTrigFunction[u_,x_] := u\n",
+                   "PowerOfInertTrigSumQ[u_,func_,x_] :=\n  MatchQ[u, (a_.+b_.*(c_.*func[w_])^n_.)^p_. /; FreeQ[{a,b,c,n,p},x] && Not[EqQ[a,0] && (IntegerQ[p] || EqQ[n,1])]] || \n  MatchQ[u, (a_.+b_.*(d_.*func[w_])^p_.+c_.*(d_.*func[w_])^q_.)^n_. /; FreeQ[{a,b,c,d,n,p,q},x]]\n"
+                 ],
+      "section": "InertTrigQ",
+        "usage": "",
+     "funcname": "FixInertTrigFunction[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "ReduceInertTrig[func_,u_] :=\n  func[u]\n",
+                   "ReduceInertTrig[func_,m_,u_] :=\n  If[m<0,\n    If[m>=-1/4,\n      func[m*Pi+u],\n    Switch[func,\n\t  sin, -ReduceInertTrig[sin,-m,-u],\n\t  cos, ReduceInertTrig[cos,-m,-u],\n\t  tan, -ReduceInertTrig[tan,-m,-u],\n\t  cot, -ReduceInertTrig[cot,-m,-u],\n\t  sec, ReduceInertTrig[sec,-m,-u],\n\t  csc, -ReduceInertTrig[csc,-m,-u]]],\n  If[m>=2,\n    ReduceInertTrig[func,Mod[m,2],u],\n  If[m>=1,\n    Switch[func,\n\t  sin, -ReduceInertTrig[sin,m-1,u],\n\t  cos, -ReduceInertTrig[cos,m-1,u],\n\t  tan, ReduceInertTrig[tan,m-1,u],\n\t  cot, ReduceInertTrig[cot,m-1,u],\n\t  sec, -ReduceInertTrig[sec,m-1,u],\n\t  csc, -ReduceInertTrig[csc,m-1,u]],\n  If[m>=1/2,\n    Switch[func,\n\t  sin, ReduceInertTrig[cos,m-1/2,u],\n\t  cos, -ReduceInertTrig[sin,m-1/2,u],\n\t  tan, -ReduceInertTrig[cot,m-1/2,u],\n\t  cot, -ReduceInertTrig[tan,m-1/2,u],\n\t  sec, -ReduceInertTrig[csc,m-1/2,u],\n\t  csc, ReduceInertTrig[sec,m-1/2,u]],\n  func[m*Pi+u]]]]] /;\nRationalQ[m]\n"
+                 ],
+      "section": " func is an inert function and m is rational ",
+        "usage": "",
+     "funcname": "ReduceInertTrig[func,a,b,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "UnifyInertTrigFunction[a_*u_,x_] :=\n  a*UnifyInertTrigFunction[u,x] /;\nFreeQ[a,x]\n"
+                 ],
+      "section": " func is an inert function and m is rational ",
+        "usage": "",
+     "funcname": "UnifyInertTrigFunction[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "KnownSineIntegrandQ[u_,x_Symbol] :=\n  KnownTrigIntegrandQ[{sin,cos},u,x]\n",
+                   "KnownTangentIntegrandQ[u_,x_Symbol] :=\n  KnownTrigIntegrandQ[{tan},u,x]\n",
+                   "KnownCotangentIntegrandQ[u_,x_Symbol] :=\n  KnownTrigIntegrandQ[{cot},u,x]\n",
+                   "KnownSecantIntegrandQ[u_,x_Symbol] :=\n  KnownTrigIntegrandQ[{sec,csc},u,x]\n",
+                   "KnownTrigIntegrandQ[list_,u_,x_Symbol] :=\n  u===1 || \n  MatchQ[u,(a_.+b_.*func_[e_.+f_.*x])^m_. /; MemberQ[list,func] && FreeQ[{a,b,e,f,m},x]] || \n  MatchQ[u,(a_.+b_.*func_[e_.+f_.*x])^m_.*(A_.+B_.*func_[e_.+f_.*x]) /; MemberQ[list,func] && FreeQ[{a,b,e,f,A,B,m},x]] || \n  MatchQ[u,(A_.+C_.*func_[e_.+f_.*x]^2) /; MemberQ[list,func] && FreeQ[{e,f,A,C},x]] || \n  MatchQ[u,(A_.+B_.*func_[e_.+f_.*x]+C_.*func_[e_.+f_.*x]^2) /; MemberQ[list,func] && FreeQ[{e,f,A,B,C},x]] || \n  MatchQ[u,(a_.+b_.*func_[e_.+f_.*x])^m_.*(A_.+C_.*func_[e_.+f_.*x]^2) /; MemberQ[list,func] && FreeQ[{a,b,e,f,A,C,m},x]] || \n  MatchQ[u,(a_.+b_.*func_[e_.+f_.*x])^m_.*(A_.+B_.*func_[e_.+f_.*x]+C_.*func_[e_.+f_.*x]^2) /; MemberQ[list,func] && FreeQ[{a,b,e,f,A,B,C,m},x]]\n"
+                 ],
+      "section": "Cosecant to secant",
+        "usage": "",
+     "funcname": "KnownTrigIntegrandQ[u,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "Rt[u_,n_Integer] :=\n  RtAux[TogetherSimplify[u],n]\n"
+                 ],
+      "section": "Simplest nth root function",
+        "usage": "",
+     "funcname": "Rt[u,n]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "NthRoot[u_,n_] := u^(1/n)\n"
+                 ],
+      "section": "Simplest nth root function",
+        "usage": "",
+     "funcname": "NthRoot[u,n]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "TrigSquare[u_] :=\n  If[SumQ[u],\n    With[{lst=SplitSum[Function[SplitProduct[TrigSquareQ,#]],u]},\n    If[Not[AtomQ[lst]] && EqQ[lst[[1,2]]+lst[[2]],0],\n      If[Head[lst[[1,1]][[1]]]===Sin,\n        lst[[2]]*Cos[lst[[1,1]][[1,1]]]^2,\n      lst[[2]]*Sin[lst[[1,1]][[1,1]]]^2],\n    False]],\n  False]\n"
+                 ],
+      "section": "Simplest nth root function",
+        "usage": "",
+     "funcname": "TrigSquare[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "RtAux[u_,n_] :=\n  If[PowerQ[u],\n    u[[1]]^(u[[2]]/n),\n  If[ProductQ[u],\n    Module[{lst},\n    lst=SplitProduct[Function[GtQ[#,0]],u];\n    If[ListQ[lst],\n      RtAux[lst[[1]],n]*RtAux[lst[[2]],n],\n    lst=SplitProduct[Function[LtQ[#,0]],u];\n    If[ListQ[lst],\n      If[EqQ[lst[[1]],-1],\n        With[{v=lst[[2]]},\n        If[PowerQ[v] && LtQ[v[[2]],0],\n          1/RtAux[-v[[1]]^(-v[[2]]),n],\n        If[ProductQ[v],\n          If[ListQ[SplitProduct[SumBaseQ,v]],\n            lst=SplitProduct[AllNegTermQ,v];\n            If[ListQ[lst],\n              RtAux[-lst[[1]],n]*RtAux[lst[[2]],n],\n            lst=SplitProduct[NegSumBaseQ,v];\n            If[ListQ[lst],\n              RtAux[-lst[[1]],n]*RtAux[lst[[2]],n],\n            lst=SplitProduct[SomeNegTermQ,v];\n            If[ListQ[lst],\n              RtAux[-lst[[1]],n]*RtAux[lst[[2]],n],\n            lst=SplitProduct[SumBaseQ,v];\n            RtAux[-lst[[1]],n]*RtAux[lst[[2]],n]]]],\n          lst=SplitProduct[AtomBaseQ,v];\n          If[ListQ[lst],\n            RtAux[-lst[[1]],n]*RtAux[lst[[2]],n],\n          RtAux[-First[v],n]*RtAux[Rest[v],n]]],\n        If[OddQ[n],\n          -RtAux[v,n],\n        NthRoot[u,n]]]]],\n      RtAux[-lst[[1]],n]*RtAux[-lst[[2]],n]],\n    lst=SplitProduct[AllNegTermQ,u];\n    If[ListQ[lst] && ListQ[SplitProduct[SumBaseQ,lst[[2]]]],\n      RtAux[-lst[[1]],n]*RtAux[-lst[[2]],n],\n    lst=SplitProduct[NegSumBaseQ,u];\n    If[ListQ[lst] && ListQ[SplitProduct[NegSumBaseQ,lst[[2]]]],\n      RtAux[-lst[[1]],n]*RtAux[-lst[[2]],n],\n    Map[Function[RtAux[#,n]],u]]]]]],\n  With[{v=TrigSquare[u]},\n  If[Not[AtomQ[v]],\n    RtAux[v,n],\n  If[OddQ[n] && LtQ[u,0],\n    -RtAux[-u,n],\n  If[ComplexNumberQ[u],\n    With[{a=Re[u],b=Im[u]},\n    If[Not[IntegerQ[a] && IntegerQ[b]] && IntegerQ[a/(a^2+b^2)] && IntegerQ[b/(a^2+b^2)],\n(* Basis: a+b*I==1/(a/(a^2+b^2)-b/(a^2+b^2)*I) *)\n      1/RtAux[a/(a^2+b^2)-b/(a^2+b^2)*I,n],\n    NthRoot[u,n]]],\n  If[OddQ[n] && NegQ[u] && PosQ[-u],\n    -RtAux[-u,n],\n  NthRoot[u,n]]]]]]]]\n"
+                 ],
+      "section": "Simplest nth root helper functions",
+        "usage": "",
+     "funcname": "RtAux[u,n]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "TrigSquareQ[u_] :=\n  PowerQ[u] && EqQ[u[[2]],2] && MemberQ[{Sin,Cos},Head[u[[1]]]]\n"
+                 ],
+      "section": "Factor base predicates",
+        "usage": "",
+     "funcname": "TrigSquareQ[u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "SplitProduct[func_,u_] :=\n  If[ProductQ[u],\n    If[func[First[u]],\n      {First[u], Rest[u]},\n    With[{lst=SplitProduct[func,Rest[u]]},\n    If[AtomQ[lst],\n      False,\n    {lst[[1]],First[u]*lst[[2]]}]]],\n  If[func[u],\n    {u, 1},\n  False]]\n"
+                 ],
+      "section": "Factor base predicates",
+        "usage": "",
+     "funcname": "SplitProduct[func,u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "SplitSum[func_,u_] :=\n  If[SumQ[u],\n    If[Not[AtomQ[func[First[u]]]],\n      {func[First[u]], Rest[u]},\n    With[{lst=SplitSum[func,Rest[u]]},\n    If[AtomQ[lst],\n      False,\n    {lst[[1]],First[u]+lst[[2]]}]]],\n  If[Not[AtomQ[func[u]]],\n    {func[u], 0},\n  False]]\n"
+                 ],
+      "section": "Factor base predicates",
+        "usage": "",
+     "funcname": "SplitSum[func,u]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "RuleName[name_] :=\n (AppendTo[$RuleNameList,name]; Null)\n"
+                 ],
+      "section": "Fix integration rules functions",
+        "usage": "",
+     "funcname": "RuleName[name]",
+      "funlist": "$RuleNameList={};"
+  },
+  {
+      "methods": [
+                   "FixIntRules[] :=\n  (DownValues[Int]=FixIntRules[DownValues[Int]]; Null)\n",
+                   "FixIntRules[rulelist_] := Block[{Int, Subst, Simp, Dist},\n  SetAttributes[{Simp,Dist,Int,Subst},HoldAll];\n  Map[Function[FixIntRule[#,#[[1,1,2,1]]]], rulelist]]\n"
+                 ],
+      "section": "Fix integration rules functions",
+        "usage": "",
+     "funcname": "FixIntRules[rulelist]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "FixIntRule[rule_] :=\n  If[AtomQ[rule[[1,1,-1]]],\n    FixIntRule[rule,rule[[1,1,-1]]],\n  If[Head[rule[[1,1,-1]]]===Pattern && AtomQ[rule[[1,1,-1,1]]],\n    FixIntRule[rule,rule[[1,1,-1,1]]],\n  Print[\"Invalid integration rule: \",rule[[1,1,-1]]]]]\n"
+                 ],
+      "section": "Fix integration rules functions",
+        "usage": "",
+     "funcname": "FixIntRule[rule]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "FixIntRule[RuleDelayed[lhs_,F_[G_[list_,F_[u_+v_,test2_]],test1_]],x_] :=\n  ReplacePart[RuleDelayed[lhs,F[G[list,F[u+v,test2]],test1]],{{2,1,2,1,1}->FixRhsIntRule[u,x],{2,1,2,1,2}->FixRhsIntRule[v,x]}] /;\nF===Condition && (G===With || G===Module || G===Block)\n",
+                   "FixIntRule[RuleDelayed[lhs_,G_[list_,F_[u_+v_,test2_]]],x_] :=\n  ReplacePart[RuleDelayed[lhs,G[list,F[u+v,test2]]],{{2,2,1,1}->FixRhsIntRule[u,x],{2,2,1,2}->FixRhsIntRule[v,x]}] /;\nF===Condition && (G===With || G===Module || G===Block)\n",
+                   "FixIntRule[RuleDelayed[lhs_,F_[G_[list_,u_+v_],test_]],x_] :=\n  ReplacePart[RuleDelayed[lhs,F[G[list,u+v],test]],{{2,1,2,1}->FixRhsIntRule[u,x],{2,1,2,2}->FixRhsIntRule[v,x]}] /;\nF===Condition && (G===With || G===Module || G===Block)\n",
+                   "FixIntRule[RuleDelayed[lhs_,G_[list_,u_+v_]],x_] :=\n  ReplacePart[RuleDelayed[lhs,G[list,u+v]],{{2,2,1}->FixRhsIntRule[u,x],{2,2,2}->FixRhsIntRule[v,x]}] /;\n(G===With || G===Module || G===Block)\n",
+                   "FixIntRule[RuleDelayed[lhs_,F_[u_+v_,test_]],x_] :=\n  ReplacePart[RuleDelayed[lhs,F[u+v,test]],{{2,1,1}->FixRhsIntRule[u,x],{2,1,2}->FixRhsIntRule[v,x]}] /;\nF===Condition\n",
+                   "FixIntRule[RuleDelayed[lhs_,u_+v_],x_] :=\n  ReplacePart[RuleDelayed[lhs,u+v],{{2,1}->FixRhsIntRule[u,x],{2,2}->FixRhsIntRule[v,x]}]\n",
+                   "FixIntRule[RuleDelayed[lhs_,F_[G_[list1_,F_[H_[list2_,u_],test2_]],test1_]],x_] :=\n  ReplacePart[RuleDelayed[lhs,F[G[list1,F[H[list2,u],test2]],test1]],{2,1,2,1,2}->FixRhsIntRule[u,x]] /;\nF===Condition && (G===With || G===Module || G===Block) && (H===With || H===Module || H===Block)\n",
+                   "FixIntRule[RuleDelayed[lhs_,F_[G_[list1_,H_[list2_,u_]],test1_]],x_] :=\n  ReplacePart[RuleDelayed[lhs,F[G[list1,H[list2,u]],test1]],{2,1,2,2}->FixRhsIntRule[u,x]] /;\nF===Condition && (G===With || G===Module || G===Block) && (H===With || H===Module || H===Block)\n",
+                   "FixIntRule[RuleDelayed[lhs_,F_[G_[list_,F_[H_[str1_,str2_,str3_,J_[u_]],test2_]],test1_]],x_] :=\n  ReplacePart[RuleDelayed[lhs,F[G[list,F[H[str1,str2,str3,J[u]],test2]],test1]],{2,1,2,1,4,1}->FixRhsIntRule[u,x]] /;\nF===Condition && (G===With || G===Module || G===Block) && H===ShowStep && J===Hold\n",
+                   "FixIntRule[RuleDelayed[lhs_,F_[G_[list_,F_[u_,test2_]],test1_]],x_] :=\n  ReplacePart[RuleDelayed[lhs,F[G[list,F[u,test2]],test1]],{2,1,2,1}->FixRhsIntRule[u,x]] /;\nF===Condition && (G===With || G===Module || G===Block)\n",
+                   "FixIntRule[RuleDelayed[lhs_,G_[list_,F_[u_,test2_]]],x_] :=\n  ReplacePart[RuleDelayed[lhs,G[list,F[u,test2]]],{2,2,1}->FixRhsIntRule[u,x]] /;\nF===Condition && (G===With || G===Module || G===Block)\n",
+                   "FixIntRule[RuleDelayed[lhs_,F_[G_[list_,u_],test_]],x_] :=\n  ReplacePart[RuleDelayed[lhs,F[G[list,u],test]],{2,1,2}->FixRhsIntRule[u,x]] /;\nF===Condition && (G===With || G===Module || G===Block)\n",
+                   "FixIntRule[RuleDelayed[lhs_,G_[list_,u_]],x_] :=\n  ReplacePart[RuleDelayed[lhs,G[list,u]],{2,2}->FixRhsIntRule[u,x]] /;\n(G===With || G===Module || G===Block)\n",
+                   "FixIntRule[RuleDelayed[lhs_,F_[u_,test_]],x_] :=\n  ReplacePart[RuleDelayed[lhs,F[u,test]],{2,1}->FixRhsIntRule[u,x]] /;\nF===Condition\n",
+                   "FixIntRule[RuleDelayed[lhs_,u_],x_] :=\n  ReplacePart[RuleDelayed[lhs,u],{2}->FixRhsIntRule[u,x]]\n"
+                 ],
+      "section": "Fix integration rules functions",
+        "usage": "",
+     "funcname": "FixIntRule[rule,x]",
+      "funlist": ""
+  },
+  {
+      "methods": [
+                   "FixRhsIntRule[u_+v_,x_] :=\n  FixRhsIntRule[u,x]+FixRhsIntRule[v,x]\n",
+                   "FixRhsIntRule[a_*u_,x_] :=\n  Dist[a,u,x] /;\nMemberQ[{Int,Subst},Head[Unevaluated[u]]]\n",
+                   "FixRhsIntRule[u_,x_] :=\n  If[Head[Unevaluated[u]]===Dist && Length[Unevaluated[u]]==2,\n    Insert[Unevaluated[u],x,3],\n  If[MemberQ[{Int, Unintegrable, CannotIntegrate, Subst, Simp, Dist}, Head[Unevaluated[u]]],\n    u,\n  Simp[u,x]]]\n"
+                 ],
+      "section": "Fix integration rules functions",
+        "usage": "",
+     "funcname": "FixRhsIntRule[rhs,x]",
+      "funlist": ""
+  }
+]
