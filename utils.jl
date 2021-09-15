@@ -891,6 +891,30 @@ for ((fn,), group) in pairs(gdf)
 	end
 
 end
-println("Complete")
 
 ## TODO make a smaller test Suite in a single file
+# TODO: create a smarter way to created abbreviated tests than just first N
+outpath = joinpath("test", "abbreviated_tests.jl")
+@info "Creating File: $outpath"
+
+N = 10
+open(outpath, "w") do io
+	write(io, preamble)
+	for ((fn,), group) in pairs(gdf)
+		setname = first(group.outputfname)
+		@info "Creating test set: $setname"
+		# Begin test set
+		write(io, "@testset \"$setname\" begin\n") 
+		
+		for t in eachrow(first(group,N))
+			i = fix_syntax(t[:juliaintegrand])
+			v = t[:variable]
+			o = fix_syntax(t[:juliaoptimal])
+			write(io, "\t@test integrate($i, $v) == :($o)\n")
+		end
+
+		# End of test set
+		write(io, "end\n\n") 
+	end
+end
+
