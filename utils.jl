@@ -849,7 +849,7 @@ df = DataFrame(CSV.File(fname))
 
 create_local_path(s) = joinpath("test", split(s, "\\")[2:end-1]...)
 create_fname(s) = replace(split(s, "\\")[end], ".m"=>".jl")
-local_path) => :outputpath)
+transform!(df, :path => ByRow(create_local_path) => :outputpath)
 transform!(df, :path => ByRow(create_fname) => :outputfname)
 
 # Makes all the directories, only need to run once if the folders are deleted
@@ -893,7 +893,7 @@ for ((fn,), group) in pairs(gdf)
 end
 
 ## TODO make a smaller test Suite in a single file
-# TODO: create a smarter way to created abbreviated tests than just first N
+# TODO: create a smarter way to created abbreviated tests than just first
 outpath = joinpath("test", "abbreviated_tests.jl")
 @info "Creating File: $outpath"
 
